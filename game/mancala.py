@@ -5,7 +5,8 @@ class Game:
 
         # Init player
         player = 0
-
+        self.playerrepeat = False
+        
         # start game
         print('Mancala Game!',"\n\n")
         game_over = False
@@ -121,6 +122,7 @@ class Game:
 
     def distr_pebbles(self, board, pit, player):
         # distribute pebbles for house in index pit
+        self.playerrepeat=False
         if not self.is_plyr_house(player, pit):
             # pit not in player houses
             return board
@@ -147,14 +149,21 @@ class Game:
             # drop a pebble in the pit
             board[nextPit] += 1
             pickedPebbles -= 1
+        
+        # check if final pebble is in own pit
+        self.playerrepeat=(((player==0) & (nextPit==6)) | ((player==1) & (nextPit==13)))
 
         return board
 
     def switch_players(self, player):
-        return 0 if player != 0 else 1
+        if self.playerrepeat:
+            return player
+        else:
+            return 0 if player != 0 else 1
 
     def pick_pit(self, board, player):
         availableMoves = self.get_available_moves(board, player)
+        print("It is player {}'s turn".format(player))
         print('Select the position of the house you wish to distribute: ')
         print('House values:')
         print(self.get_player_pits(board, player))
@@ -188,8 +197,8 @@ class Game:
         pit = self.pick_pit(board, player) - 1
         print('Player', player, 'picked house', pit)
 
-        # distribute pebbles of selected pit
-        self.distr_pebbles(board, pit, player)
+        # distribute pebbles of selected pit and check if player
+        board = self.distr_pebbles(board, pit, player)
 
         # check if player empties all houses and steal all opponents available pebbles
         self.steal_all_opponent_pebbles(board, player)
