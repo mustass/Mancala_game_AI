@@ -165,7 +165,12 @@ class Game:
         ask = True
         while ask:
             print('>>>')
-            pit = int(input())
+            try:
+                pit = int(input())
+
+            except:
+                print("Input must be an integer")
+                continue
 
             # check selected pit is valid
             if pit in availableMoves:
