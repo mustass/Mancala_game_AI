@@ -1,4 +1,4 @@
-class Game():
+class Game:
     def main(self):
         # Setup game
         board = self.new_board()
@@ -191,3 +191,6 @@ class Game():
 
         return board
 
+if __name__ == "__main__":
+    game = Game()
+    game.main()
