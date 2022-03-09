@@ -4,7 +4,7 @@ class Game:
         board = self.new_board()
 
         # Init player
-        player = 0
+        player = 1
         self.playerrepeat = False
         
         # start game
@@ -12,7 +12,7 @@ class Game:
         game_over = False
         while not game_over:
             print('Board:')
-            print('Player0 | houses: ', self.get_player_pits(board, 0), ' | store: ', self.get_player_store(board, 0))
+            print('Player0 | houses: ', self.get_player_pits(board, 0)[::-1], ' | store: ', self.get_player_store(board, 0))
             print('Player1 | houses: ', self.get_player_pits(board, 1), ' | store: ', self.get_player_store(board, 1))
             print('===================================================',"\n")
 
@@ -89,7 +89,7 @@ class Game:
 
     def is_end_match(self, board):
         total = self.get_player_store(board, 0) + self.get_player_store(board, 1)
-        return total == 48
+        return ((total == 48) | (self.get_player_pits(board, 0)==0) |(self.get_player_pits(board, 1)==0))
 
     def is_win(self, board):
         if self.get_player_store(board, 0) > self.get_player_store(board, 1):
