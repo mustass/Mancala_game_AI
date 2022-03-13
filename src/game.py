@@ -95,7 +95,7 @@ class Game:
 
     def steal_opposite_houses(self, player, pit):
 
-        if not self.is_plyr_house(player, pit):
+        if not self.is_plyr_house(pit,player):
             return
 
         player_houses = self.player_houses[player]
