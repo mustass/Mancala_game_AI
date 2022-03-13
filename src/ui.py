@@ -4,8 +4,8 @@ from game import Game
 
 
 class UIPlayer:
-    def __init__(self, board, player_number: Literal[0, 1], AI=None):
-        self.board = board
+    def __init__(self, game, player_number: Literal[0, 1], AI=None):
+        self.game = game
         self.player_number = player_number
         self.nxt_pos = player_number * 7
 
@@ -15,7 +15,7 @@ class UIPlayer:
 
     @property
     def move(self):
-        nxt_move = Game.Move(self.nxt_pos, self.nxt_skip)
+        nxt_move = self.nxt_pos
         if self.board.check(nxt_move):
             return nxt_move
         else:
@@ -35,7 +35,7 @@ class Window:
         self.colors = self.setup_colors()
         self.body_state = "game"
 
-        self.board, self.players = self.new_game()
+        self.game, self.players = self.new_game()
 
         self.nrows, self.ncols = self.screen.getmaxyx()
         self.header = self.screen.subwin(1, self.ncols, 0, 0)
@@ -50,9 +50,9 @@ class Window:
         self.main_loop()
 
     def new_game(self):
-        board = Game().board()
-        players = [UIPlayer(board), UIPlayer(board)]
-        return board, players
+        game = Game()
+        players = [UIPlayer(game,0), UIPlayer(game,1)]
+        return game, players
 
     def main_loop(self):
         while True:
@@ -86,7 +86,7 @@ class Window:
                     curr_player.dec() if is_top_player else curr_player.inc()
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
                     if curr_player.move is not None:
-                        self.board.update(curr_player.move)
+                        self.game.distr_pebbles(curr_player.move)
                 self.draw_body()
             curses.doupdate()
 
@@ -152,7 +152,7 @@ class Window:
         self.body.clear()
 
         height, width = 1, 4
-        cell_y, cell_x = (2, self.board.state.shape[0] // 2 + 1)
+        cell_y, cell_x = (2, 1 // 2 + 1)
         total_height, total_width = cell_y * (height + 1) + 1, cell_x * (width + 1) + 1
 
         nrows, ncols = self.body.getmaxyx()
@@ -206,37 +206,37 @@ class Window:
         for idx_x in range(cell_x - 2):
             pos_x = ulx + (idx_x + 1) * (width + 1) + (width) // 2
             self.body.addstr(
-                pos_y, pos_x, "%2d" % self.board.state[idx_x], self.colors["red"]
+                pos_y, pos_x, "%2d" % self.game.board[idx_x], self.colors["red"]
             )
             self.body.addstr(
                 pos_y + (height + 1),
                 pos_x,
-                "%2d" % self.board.state[-idx_x - 2],
+                "%2d" % self.board[-idx_x - 2],
                 self.colors["green"],
             )
         self.body.addstr(
             uly + height + 1,
             lrx - width // 2 - 1,
-            "%2d" % self.board.state[self.board.mancala[0]],
+            "%2d" % self.board[6],
             self.colors["red"],
         )
         self.body.addstr(
             uly + height + 1,
             ulx + width // 2,
-            "%2d" % self.board.state[self.board.mancala[1]],
+            "%2d" % self.board[13],
             self.colors["green"],
         )
 
         if self.board.done:
             # Final state
             if (
-                self.board.state[self.board.mancala[0]]
-                > self.board.state[self.board.mancala[1]]
+                self.board[6]
+                > self.board[13]
             ):
                 final_string = "Top player wins"
             elif (
-                self.board.state[self.board.mancala[0]]
-                < self.board.state[self.board.mancala[1]]
+                self.board[6]
+                < self.board[13]
             ):
                 final_string = "Bottom Player wins"
             else:
@@ -244,24 +244,24 @@ class Window:
             self.body.addstr(lry + 2, (ncols - len(final_string)) // 2, final_string)
         else:
             # Highlight next move
-            curr_player = self.players[self.board.player]
+            curr_player = self.players[self.game.player]
 
             if curr_player.AI == True:
                 curr_player.think()
 
             move_idx = (
-                self.board.player * (self.board.board_sz + 1) + curr_player.nxt_pos
+                self.game.player * (self.game.board_sz + 1) + curr_player.nxt_pos
             )
             move_format = (
-                self.colors["green"] if self.board.player else self.colors["red"]
+                self.colors["green"] if self.game.player else self.colors["red"]
             ) | (curses.A_REVERSE if curr_player.nxt_skip else curses.A_UNDERLINE)
-            pos_y = uly + self.board.player * (height + 1) + (height + 1) // 2
+            pos_y = uly + self.game.player * (height + 1) + (height + 1) // 2
             if self.board.player == 0:
                 pos_x = ulx + (curr_player.nxt_pos + 1) * (width + 1) + (width) // 2
             else:
                 pos_x = lrx - (curr_player.nxt_pos + 1) * (width + 1) - (width) // 2 - 1
             self.body.addstr(
-                pos_y, pos_x, "%2d" % self.board.state[move_idx], move_format
+                pos_y, pos_x, "%2d" % self.board[move_idx], move_format
             )
 
         self.body.noutrefresh()

@@ -9,17 +9,19 @@ class Game:
     """
 
     def __init__(
-        self, board: list = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
+        self, board: list = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0], board_size = 6
     ) -> None:
         assert len(board) == 14
         assert sum(board) == 48
 
         self.board = board
+        self.board_sz = board_size
 
         self.player_houses = {0: [0, 1, 2, 3, 4, 5], 1: [7, 8, 9, 10, 11, 12]}
 
         self.player_pits = {0: 6, 1: 13}
-
+        
+        self.player = 0
         print(f"Initialized the board{board}")
 
     def get_legal_moves(self, player: Literal[0, 1]) -> list:
@@ -60,10 +62,14 @@ class Game:
             return None
         return outcome.index(max(outcome,))
 
-    def switch_player(self, player: Literal[0, 1]):
+    def opposite_player(self, player: Literal[0, 1]):
         if player == 1:
             return 0
         return 1
+
+    def switch_player(self):
+        self.player = self.opposite_player()
+
 
     def distr_pebbles(self, pit: Literal[PITS], player: int):
         assert pit in self.get_legal_moves(
@@ -78,7 +84,7 @@ class Game:
 
             pit = 0 if pit == 13 else pit + 1
 
-            if not pit == self.player_pits[self.switch_player(player)]:
+            if not pit == self.player_pits[self.opposite_player(player)]:
                 self.board[pit] += 1
                 pebbles -= 1
                 self.steal_opposite_houses(player, pit)
@@ -93,7 +99,7 @@ class Game:
             return
 
         player_houses = self.player_houses[player]
-        opposite_houses = self.player_houses[self.switch_player(player)].reverse()
+        opposite_houses = self.player_houses[self.opposite_player(player)].reverse()
         steal = False
 
         player_house_index = player_houses.index(pit)
