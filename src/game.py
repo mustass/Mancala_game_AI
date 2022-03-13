@@ -68,7 +68,7 @@ class Game:
         return 1
 
     def switch_player(self):
-        self.player = self.opposite_player()
+        self.player = self.opposite_player(self.player)
 
 
     def distr_pebbles(self, pit: Literal[PITS], player: int):
