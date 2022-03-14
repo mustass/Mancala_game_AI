@@ -15,7 +15,7 @@ class UIPlayer:
 
     @property
     def move(self):
-        nxt_move = self.nxt_pos
+        nxt_move = self.nxt_pos if self.player_number == 0 else self.nxt_pos + 7
         if nxt_move in self.game.get_legal_moves(self.player_number):
             return nxt_move
         else:
@@ -86,7 +86,9 @@ class Window:
                     curr_player.inc() if is_top_player else curr_player.dec()
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
                     if curr_player.move is not None:
-                        self.game.distr_pebbles(curr_player.move, curr_player.player_number)
+                        extra_move = self.game.distr_pebbles(curr_player.move, curr_player.player_number)
+                        if not extra_move:
+                            self.game.switch_player()
                 self.draw_body()
             curses.doupdate()
 
