@@ -85,15 +85,15 @@ class Game:
             house = 0 if house == 13 else house + 1
 
             if not house == self.player_pits[self.opposite_player(player)]:
-                self.capture_opposite_house(player, house)
                 self.board[house] += 1
                 pebbles -= 1
+
+        self.capture_opposite_house(player, house)
+        self.early_win(player)
 
         extra_turn = ((player == 0) and (house == 6)) or (
             (player == 1) and (house == 13)
         )
-
-        self.early_win(player)
 
         return extra_turn
 
@@ -107,7 +107,7 @@ class Game:
         player_house_index = player_houses.index(house)
 
         steal = (
-            self.board[house] == 0
+            self.board[house] == 1
             and self.board[opposite_houses[player_house_index]] > 0
         )
 
@@ -121,10 +121,19 @@ class Game:
         if len(moves_left) == 0:
             print(self.player_houses[self.opposite_player(player)])
             take_over_pebbles = sum(
-                [self.board[i] for i in self.player_houses[self.opposite_player(player)]]
+                [
+                    self.board[i]
+                    for i in self.player_houses[self.opposite_player(player)]
+                ]
             )
             self.board[self.player_pits[player]] += take_over_pebbles
 
             for index, element in enumerate(self.board):
                 if index in self.player_houses[self.opposite_player(player)]:
                     self.board[index] = 0
+
+
+if __name__ == "__main__":
+    test_game = Game([0, 5, 1, 0, 6, 5, 1, 5, 1, 5, 4, 5, 5, 5])
+    test_game.distr_pebbles(2, 0)
+    print(test_game.board)

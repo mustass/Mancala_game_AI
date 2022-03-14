@@ -4,7 +4,8 @@ INITIAL_BOARD = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
 PLAYER_1_WINS_BOARD = [0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 25]
 PLAYER_0_WINS_BOARD = [0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 22]
 EARLY_WIN_BOARD = [0, 0, 0, 0, 0, 1, 10, 5, 5, 5, 5, 5, 5, 7]
-STEALER_BOARD = [0, 5, 5, 0, 6, 5, 1, 5, 1, 5, 5, 5, 5, 0]
+STEALER_BOARD = [0, 5, 1, 0, 6, 5, 1, 5, 1, 5, 4, 5, 5, 5]
+
 
 def test_init():
     test_game = Game()
@@ -55,10 +56,11 @@ def test_distribute_pebbles():
     test_game.distr_pebbles(3, 0)
     assert test_game.board == [0, 5, 5, 0, 6, 5, 1, 5, 1, 5, 5, 5, 5, 0]
 
+
 def test_stealing_opponent_house():
     test_game = Game(STEALER_BOARD)
     test_game.distr_pebbles(2, 0)
-    assert test_game.board == [0, 5, 0, 1, 7, 6, 7, 6, 1, 0, 5, 5, 5, 0]
+    assert test_game.board == [0, 5, 0, 1, 6, 5, 6, 5, 1, 0, 4, 5, 5, 5]
 
 
 def test_early_win():
