@@ -51,7 +51,7 @@ class Window:
 
     def new_game(self):
         game = Game()
-        players = [UIPlayer(game,0), UIPlayer(game,1)]
+        players = [UIPlayer(game, 0), UIPlayer(game, 1)]
         return game, players
 
     def main_loop(self):
@@ -86,7 +86,9 @@ class Window:
                     curr_player.inc() if is_top_player else curr_player.dec()
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
                     if curr_player.move is not None:
-                        extra_move = self.game.distr_pebbles(curr_player.move, curr_player.player_number)
+                        extra_move = self.game.distr_pebbles(
+                            curr_player.move, curr_player.player_number
+                        )
                         if not extra_move:
                             self.game.switch_player()
                 self.draw_body()
@@ -231,15 +233,9 @@ class Window:
 
         if self.game.is_end_match():
             # Final state
-            if (
-                self.game.board[6]
-                > self.game.board[13]
-            ):
+            if self.game.board[6] > self.game.board[13]:
                 final_string = "Top player wins"
-            elif (
-                self.game.board[6]
-                < self.game.board[13]
-            ):
+            elif self.game.board[6] < self.game.board[13]:
                 final_string = "Bottom Player wins"
             else:
                 final_string = "Draw"
@@ -251,9 +247,7 @@ class Window:
             if curr_player.is_ai == True:
                 curr_player.think()
 
-            move_idx = (
-                self.game.player * (self.game.board_sz + 1) + curr_player.nxt_pos
-            )
+            move_idx = self.game.player * (self.game.board_sz + 1) + curr_player.nxt_pos
             move_format = (
                 self.colors["green"] if self.game.player else self.colors["red"]
             ) | (curses.A_UNDERLINE)

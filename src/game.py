@@ -9,7 +9,7 @@ class Game:
     """
 
     def __init__(
-        self, board: list = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0], board_size = 6
+        self, board: list = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0], board_size=6
     ) -> None:
         assert len(board) == 14
         assert sum(board) == 48
@@ -20,9 +20,9 @@ class Game:
         self.player_houses = {0: [0, 1, 2, 3, 4, 5], 1: [7, 8, 9, 10, 11, 12]}
 
         self.player_pits = {0: 6, 1: 13}
-        
+
         self.player = 0
-        
+
         print(f"Initialized the board{board}")
 
     def get_legal_moves(self, player: Literal[0, 1]) -> list:
@@ -71,7 +71,6 @@ class Game:
     def switch_player(self):
         self.player = self.opposite_player(self.player)
 
-
     def distr_pebbles(self, house: Literal[PITS], player: int):
         assert house in self.get_legal_moves(
             player
@@ -86,27 +85,30 @@ class Game:
             house = 0 if house == 13 else house + 1
 
             if not house == self.player_pits[self.opposite_player(player)]:
+                self.capture_opposite_house(player, house)
                 self.board[house] += 1
                 pebbles -= 1
-                self.steal_opposite_houses(player, house)
 
-        extra_turn = ((player == 0) and (house == 6)) or ((player == 1) and (house == 13))
+        extra_turn = ((player == 0) and (house == 6)) or (
+            (player == 1) and (house == 13)
+        )
+
+        self.early_win(player)
 
         return extra_turn
 
-    def steal_opposite_houses(self, player, house):
+    def capture_opposite_house(self, player, house):
 
-        if not self.is_plyr_house(house,player):
+        if not self.is_plyr_house(house, player):
             return
-
         player_houses = self.player_houses[player]
-        opposite_houses = self.player_houses[self.opposite_player(player)].reverse()
+        opposite_houses = self.player_houses[self.opposite_player(player)][::-1]
         steal = False
-
         player_house_index = player_houses.index(house)
 
         steal = (
-            self.board[house] == 0 and self.board[opposite_houses[player_house_index]] > 0
+            self.board[house] == 0
+            and self.board[opposite_houses[player_house_index]] > 0
         )
 
         if steal:
@@ -114,28 +116,15 @@ class Game:
             self.board[player_pit] += self.board[opposite_houses[player_house_index]]
             self.board[opposite_houses[player_house_index]] = 0
 
+    def early_win(self, player):
+        moves_left = self.get_legal_moves(player)
+        if len(moves_left) == 0:
+            print(self.player_houses[self.opposite_player(player)])
+            take_over_pebbles = sum(
+                [self.board[i] for i in self.player_houses[self.opposite_player(player)]]
+            )
+            self.board[self.player_pits[player]] += take_over_pebbles
 
-if __name__ == "__main__":
-    test = Game()
-    moves1 = test.get_legal_moves(0)
-    moves2 = test.get_legal_moves(1)
-
-    print(
-        test.is_plyr_house(5, 0),
-        test.is_plyr_house(1, 0),
-        test.is_plyr_house(12, 0),
-        test.is_plyr_house(6, 0),
-    )
-    print(
-        test.is_plyr_house(5, 1),
-        test.is_plyr_house(1, 1),
-        test.is_plyr_house(12, 1),
-        test.is_plyr_house(6, 1),
-    )
-
-    print(
-        test.is_end_match(), test.has_move(1), test.has_move(0),
-    )
-
-    test1 = Game([0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 24])
-    print(test1.is_end_match(), test1.has_move(1), test1.has_move(0), test1.is_win())
+            for index, element in enumerate(self.board):
+                if index in self.player_houses[self.opposite_player(player)]:
+                    self.board[index] = 0
