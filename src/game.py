@@ -134,6 +134,4 @@ class Game:
 
 
 if __name__ == "__main__":
-    test_game = Game([0, 5, 1, 0, 6, 5, 1, 5, 1, 5, 4, 5, 5, 5])
-    test_game.distr_pebbles(2, 0)
-    print(test_game.board)
+    pass
