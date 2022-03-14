@@ -1,32 +1,6 @@
 import curses
-from typing import Literal
 from game import Game
-
-
-class UIPlayer:
-    def __init__(self, game, player_number: Literal[0, 1], AI=None):
-        self.game = game
-        self.player_number = player_number
-        self.nxt_pos = 0
-        self.is_ai = False
-        if AI is not None:
-            self.is_ai = True
-            self.AI = AI
-
-    @property
-    def move(self):
-        nxt_move = self.nxt_pos if self.player_number == 0 else self.nxt_pos + 7
-        if nxt_move in self.game.get_legal_moves(self.player_number):
-            return nxt_move
-        else:
-            return None
-
-    def inc(self):
-        self.nxt_pos = min(self.nxt_pos + 1, self.game.board_sz - 1)
-
-    def dec(self):
-        self.nxt_pos = max(self.nxt_pos - 1, 0)
-
+from players import UIPlayer
 
 class Window:
     def __init__(self, stdscr):
@@ -243,9 +217,6 @@ class Window:
         else:
             # Highlight next move
             curr_player = self.players[self.game.player]
-
-            if curr_player.is_ai == True:
-                curr_player.think()
 
             move_idx = self.game.player * (self.game.board_sz + 1) + curr_player.nxt_pos
             move_format = (
