@@ -7,7 +7,7 @@ class UIPlayer:
     def __init__(self, game, player_number: Literal[0, 1], AI=None):
         self.game = game
         self.player_number = player_number
-        self.nxt_pos = player_number * 7
+        self.nxt_pos = 0
         self.is_ai = False
         if AI is not None:
             self.is_ai = True
@@ -77,13 +77,13 @@ class Window:
 
             elif self.body_state == "game":
                 curr_player = self.players[self.game.player]
-                is_top_player = self.game.player == 1
+                is_top_player = self.game.player == 0
                 if c == ord("n"):
                     self.game.board, self.players = self.new_game()
                 elif c == curses.KEY_LEFT:
-                    curr_player.inc() if is_top_player else curr_player.dec()
-                elif c == curses.KEY_RIGHT:
                     curr_player.dec() if is_top_player else curr_player.inc()
+                elif c == curses.KEY_RIGHT:
+                    curr_player.inc() if is_top_player else curr_player.dec()
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
                     if curr_player.move is not None:
                         self.game.distr_pebbles(curr_player.move, curr_player.player_number)
@@ -152,7 +152,7 @@ class Window:
         self.body.clear()
 
         height, width = 1, 4
-        cell_y, cell_x = (2, 13 // 2 + 1)
+        cell_y, cell_x = (2, 14 // 2 + 1)
         total_height, total_width = cell_y * (height + 1) + 1, cell_x * (width + 1) + 1
 
         nrows, ncols = self.body.getmaxyx()

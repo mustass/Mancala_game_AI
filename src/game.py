@@ -22,6 +22,7 @@ class Game:
         self.player_pits = {0: 6, 1: 13}
         
         self.player = 0
+        
         print(f"Initialized the board{board}")
 
     def get_legal_moves(self, player: Literal[0, 1]) -> list:
@@ -71,41 +72,41 @@ class Game:
         self.player = self.opposite_player(self.player)
 
 
-    def distr_pebbles(self, pit: Literal[PITS], player: int):
-        assert pit in self.get_legal_moves(
+    def distr_pebbles(self, house: Literal[PITS], player: int):
+        assert house in self.get_legal_moves(
             player
-        ), f"The chosen {pit} is not in the set of legal moves for player {player}"
+        ), f"The chosen house {house} is not in the set of legal moves for player {player}"
 
-        pebbles = self.board[pit]
+        pebbles = self.board[house]
 
-        self.board[pit] = 0
+        self.board[house] = 0
 
         while pebbles > 0:
 
-            pit = 0 if pit == 13 else pit + 1
+            house = 0 if house == 13 else house + 1
 
-            if not pit == self.player_pits[self.opposite_player(player)]:
-                self.board[pit] += 1
+            if not house == self.player_pits[self.opposite_player(player)]:
+                self.board[house] += 1
                 pebbles -= 1
-                self.steal_opposite_houses(player, pit)
+                self.steal_opposite_houses(player, house)
 
-        extra_turn = ((player == 0) and (pit == 6)) or ((player == 1) and (pit == 13))
+        extra_turn = ((player == 0) and (house == 6)) or ((player == 1) and (house == 13))
 
         return extra_turn
 
-    def steal_opposite_houses(self, player, pit):
+    def steal_opposite_houses(self, player, house):
 
-        if not self.is_plyr_house(pit,player):
+        if not self.is_plyr_house(house,player):
             return
 
         player_houses = self.player_houses[player]
         opposite_houses = self.player_houses[self.opposite_player(player)].reverse()
         steal = False
 
-        player_house_index = player_houses.index(pit)
+        player_house_index = player_houses.index(house)
 
         steal = (
-            self.board[pit] == 0 and self.board[opposite_houses[player_house_index]] > 0
+            self.board[house] == 0 and self.board[opposite_houses[player_house_index]] > 0
         )
 
         if steal:
