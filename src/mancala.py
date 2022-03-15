@@ -4,7 +4,7 @@ from typing import Literal
 PITS = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 
-class Game:
+class Mancala:
     """
     Model of the game
     """
@@ -26,18 +26,18 @@ class Game:
 
         print(f"Initialized the board{board}")
 
-    def get_legal_moves(self, player: Literal[0, 1]) -> list:
+    def get_legal_moves(self, board, player: Literal[0, 1]) -> list:
         moves = {
             0: [
                 i
-                for i, e in enumerate(self.board)
+                for i, e in enumerate(board)
                 if e != 0
                 and i
                 not in self.player_houses[1] + [v for k, v in self.player_pits.items()]
             ],
             1: [
                 i
-                for i, e in enumerate(self.board)
+                for i, e in enumerate(board)
                 if e != 0
                 and i
                 not in self.player_houses[0] + [v for k, v in self.player_pits.items()]
@@ -52,14 +52,14 @@ class Game:
         legal_moves = self.get_legal_moves(player)
         return len(legal_moves) > 0
 
-    def is_end_match(self):
+    def is_end_match(self, board):
         pit_indices = [int(v) for k, v in self.player_pits.items()]
-        return sum(self.board[i] for i in pit_indices) == 48
+        return sum(board[i] for i in pit_indices) == 48
 
-    def is_win(self):
-        assert self.is_end_match(), "The game has not ended."
+    def is_win(self, board):
+        assert self.is_end_match(board), "The game has not ended."
         pit_indices = [int(v) for k, v in self.player_pits.items()]
-        outcome = [self.board[i] for i in pit_indices]
+        outcome = [board[i] for i in pit_indices]
         if outcome[0] == outcome[1]:
             return None
         return outcome.index(max(outcome,))
@@ -72,67 +72,69 @@ class Game:
     def switch_player(self):
         self.player = self.opposite_player(self.player)
 
-    def distr_pebbles(self, house: Literal[PITS], player: int):
-        assert house in self.get_legal_moves(
+    def distr_pebbles(self, board, house: Literal[PITS], player: int) -> tuple:
+        assert house in self.get_legal_moves(board,
             player
         ), f"The chosen house {house} is not in the set of legal moves for player {player}"
 
-        pebbles = self.board[house]
-
-        self.board[house] = 0
+        pebbles = board[house]
+        board[house] = 0
 
         while pebbles > 0:
 
             house = 0 if house == 13 else house + 1
 
             if not house == self.player_pits[self.opposite_player(player)]:
-                self.board[house] += 1
+                board[house] += 1
                 pebbles -= 1
 
-        self.capture_opposite_house(player, house)
-        self.early_win(player)
+        board = self.capture_opposite_house(board, player, house)
+        board = self.early_win(board, player)
 
         extra_turn = ((player == 0) and (house == 6)) or (
             (player == 1) and (house == 13)
         )
 
-        return extra_turn
+        return board, extra_turn
 
-    def capture_opposite_house(self, player, house):
-
+    def capture_opposite_house(self, board, player, house) -> list:
+        # TODO Own one pebble --> own pit
         if not self.is_plyr_house(house, player):
-            return
+            return board
         player_houses = self.player_houses[player]
         opposite_houses = self.player_houses[self.opposite_player(player)][::-1]
         steal = False
         player_house_index = player_houses.index(house)
 
-        steal = (
-            self.board[house] == 1
-            and self.board[opposite_houses[player_house_index]] > 0
-        )
+        steal = board[house] == 1 and board[opposite_houses[player_house_index]] > 0
 
         if steal:
             player_pit = self.player_pits[player]
-            self.board[player_pit] += self.board[opposite_houses[player_house_index]]
-            self.board[opposite_houses[player_house_index]] = 0
+            board[player_pit] += board[opposite_houses[player_house_index]]
+            board[opposite_houses[player_house_index]] = 0
 
-    def early_win(self, player):
-        moves_left = self.get_legal_moves(player)
+        return board
+
+    def early_win(self, board, player) -> list:
+        moves_left = self.get_legal_moves(board, player)
         if len(moves_left) == 0:
             print(self.player_houses[self.opposite_player(player)])
             take_over_pebbles = sum(
-                [
-                    self.board[i]
-                    for i in self.player_houses[self.opposite_player(player)]
-                ]
+                [board[i] for i in self.player_houses[self.opposite_player(player)]]
             )
-            self.board[self.player_pits[player]] += take_over_pebbles
+            board[self.player_pits[player]] += take_over_pebbles
 
             for index, element in enumerate(self.board):
                 if index in self.player_houses[self.opposite_player(player)]:
-                    self.board[index] = 0
+                    board[index] = 0
+
+        return board
+
+    def update_game_board(self, board):
+        self.board = board
 
 
 if __name__ == "__main__":
-    pass
+    test = Mancala()
+    test.distr_pebbles(test.board,3,0)
+    print(test.board)

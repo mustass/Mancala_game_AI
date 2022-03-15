@@ -1,6 +1,7 @@
 import curses
-from game import Game
+from mancala import Mancala
 from players import UIPlayer
+
 
 class Window:
     def __init__(self, stdscr):
@@ -24,7 +25,7 @@ class Window:
         self.main_loop()
 
     def new_game(self):
-        game = Game()
+        game = Mancala()
         players = [UIPlayer(game, 0), UIPlayer(game, 1)]
         return game, players
 
@@ -49,20 +50,33 @@ class Window:
                 self.draw_body()
                 self.draw_footer()
 
+            elif self.body_state == "choices":
+                if c == ord("1"):
+                    self.game, self.players = self.new_game()
+                    self.body_state = "game"
+                elif c == ord("2"):
+                    pass
+                elif c == ord("3"):
+                    pass
+                elif c == ord("4"):
+                    pass
+                self.draw_body()
+
             elif self.body_state == "game":
                 curr_player = self.players[self.game.player]
                 is_top_player = self.game.player == 0
                 if c == ord("n"):
-                    self.game.board, self.players = self.new_game()
+                    self.body_state = "choices"
                 elif c == curses.KEY_LEFT:
                     curr_player.dec() if is_top_player else curr_player.inc()
                 elif c == curses.KEY_RIGHT:
                     curr_player.inc() if is_top_player else curr_player.dec()
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
                     if curr_player.move is not None:
-                        extra_move = self.game.distr_pebbles(
-                            curr_player.move, curr_player.player_number
+                        new_board, extra_move = self.game.distr_pebbles(
+                            self.game.board, curr_player.move, curr_player.player_number
                         )
+                        self.game.update_game_board(new_board)
                         if not extra_move:
                             self.game.switch_player()
                 self.draw_body()
@@ -103,8 +117,10 @@ class Window:
     def draw_body(self):
         if self.body_state == "game":
             self.draw_game()
-        else:
+        elif self.body_state == "help":
             self.draw_help()
+        elif self.body_state == "choices":
+            self.draw_choices()
 
     def draw_help(self):
         self.body.clear()
@@ -119,6 +135,22 @@ class Window:
             Controls:
                 - Left and Right Arrow Key to select hole
                 - Enter for simple move
+        """
+
+        for idx, line in enumerate(help_str.split("\n")):
+            self.body.addstr(idx, 0, line)
+
+        self.body.noutrefresh()
+
+    def draw_choices(self):
+        self.body.clear()
+
+        help_str = """
+            Game Mode:
+                - 1: Human vs. Human
+                - 2: Human vs. MiniMax AI
+                - 3: Human vs. AlfaBeta AI
+                - 4: Human vs. Monte Carlo Tree Search AI
         """
 
         for idx, line in enumerate(help_str.split("\n")):
@@ -205,7 +237,7 @@ class Window:
             self.colors["green"],
         )
 
-        if self.game.is_end_match():
+        if self.game.is_end_match(self.game.board):
             # Final state
             if self.game.board[6] > self.game.board[13]:
                 final_string = "Top player wins"
