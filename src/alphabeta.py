@@ -1,3 +1,4 @@
+from copy import deepcopy
 from mancala import Mancala
 from heuristics import GameScore, Heuristic
 
@@ -7,11 +8,11 @@ class AlphaBetaPlayer:
         self.game = game
         self.max_depth = max_depth
 
-        self.beta = 1000000
-        self.alpha = -1000000
-
         self.GameScore = GameScore(self.game)
         self.Heuristic = heuristic(self.game)
+
+        self.beta = 1000000
+        self.alpha = -1000000
 
     def think(self, board, player):
 
@@ -19,8 +20,10 @@ class AlphaBetaPlayer:
 
         return move
 
-    def alpha_beta_algorithm(self, board, depth, player, maximizing=True):
-
+    def alpha_beta_algorithm(self, board, depth, player, extra_turn=False):
+        
+        board = deepcopy(board)
+        
         # Change turns every repetition except in the beginning or if the player has an extra turn
         if depth != self.max_depth and not extra_turn:
             player = self.game.opposite_player(player)
@@ -29,14 +32,16 @@ class AlphaBetaPlayer:
 
         # Has max depth been reached
         if self.game.is_end_match(board):
+            print("-" * 88)
             score = self.GameScore.score(board, player)
-            print(score)
+            print(f"The game is over with the score {score}")
             print("-" * 88)
             return score, None
 
         elif depth == 0:
+            print("-" * 88)
             score = self.Heuristic.score(board, player)
-            print(score)
+            print(f"Reached max_depth with the score {score}")
             print("-" * 88)
             return score, None
 
@@ -45,39 +50,48 @@ class AlphaBetaPlayer:
             stored_value = -99999
             # Generate nodes
             for move in self.game.get_legal_moves(board, player):
-                print(f"Maximizing - pick: {move}")
+                print("-" * 88)
+                print(f"Maximizing for player {player} - looking at move: {move}")
 
-                child_board, extra_turn = self.game.distr_pebbles(board, move, player)
-
+                try:
+                    child_board, extra_turn = self.game.distr_pebbles(board, move, player)
+                except Exception as e:
+                    print(board)
+                    print(move)
+                    raise(e)
                 # Max of the max vs max of the min
-                value, _ = self.minimax_algorithm(
+                value, _ = self.alpha_beta_algorithm(
                     child_board, depth - 1, player, extra_turn
                 )
 
                 if value > stored_value:
                     print(
-                        f"The stored value {stored_value} was updated with {value} at move {move}"
+                        f"The stored value {stored_value} was updated with {value} after move {move}"
                     )
                     stored_value = value
                     best_move = move
+                
 
                 if value >= self.beta:
                     break
                 self.alpha = max(self.alpha, stored_value)
 
-                print(f"stored value vs value for MAX is: {stored_value} vs {value}")
-                print(f"stored best move vs i for MAX is: {best_move} vs {move}")
-
+                print(f"Stored value for MAX is: {stored_value}")
+                print(f"Stored best move for MAX is: {best_move}")
+                
+                print("-" * 88)
             return stored_value, move
         else:
             stored_value = 99999
 
             for move in self.game.get_legal_moves(board, player):
-                print(f"Minimizing - pick: {move}")
+                print("-" * 88)
+                print(f"Minimizing for player {player} - looking at move: {move}")
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
-                value, _ = self.minimax_algorithm(
+                # Min of the min vs min of the max
+                value, _ = self.alpha_beta_algorithm(
                     child_board, depth - 1, player, extra_turn
                 )
 
@@ -87,12 +101,15 @@ class AlphaBetaPlayer:
                     )
                     stored_value = value
                     best_move = move
+                
 
                 if value <= self.alpha:
                     break
                 self.beta = min(self.beta, stored_value)
 
-                print(f"Stored value vs value for MIN is: {stored_value} vs {value}")
-                print(f"Stored best move vs i for MIN is: {best_move} vs {move}")
-
+                print(f"Stored value for MIN is: {stored_value}")
+                print(f"Stored best move for MIN is: {best_move}")
+                print("-" * 88)
             return stored_value, move
+
+

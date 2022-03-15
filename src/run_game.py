@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-
+from copy import deepcopy
 from mancala import Mancala
 from alphabeta import AlphaBetaPlayer
 from minimax import MiniMaxPlayer
@@ -68,16 +68,17 @@ class Match:
         iteration = 0
         while not self.game.is_end_match(self.game.board):
             if verbose:
+                print("\n", "=" * 88, "\n")
                 print(f"Board at iteration {iteration}:")
                 print(
                     "Player0 | houses: ",
-                    self.game.board[self.game.player_houses[0]],
+                    [self.game.board[i] for i in self.game.player_houses[0]],
                     " | pit: ",
                     self.game.board[self.game.player_pits[0]],
                 )
                 print(
                     "Player1 | houses: ",
-                    self.game.board[self.game.player_houses[1]],
+                    [self.game.board[i] for i in self.game.player_houses[1]],
                     " | pit: ",
                     self.game.board[self.game.player_pits[1]],
                 )
@@ -101,21 +102,21 @@ class Match:
 
             iteration += 1
 
-            print(f"\nFinal board:")
-            print(
-                "Player0 | houses: ",
-                self.game.board[self.game.player_houses[0]],
-                " | pit: ",
-                self.game.board[self.game.player_pits[0]],
-            )
-            print(
-                "Player1 | houses: ",
-                self.game.board[self.game.player_houses[1]],
-                " | pit: ",
-                self.game.board[self.game.player_pits[1]],
-            )
-            print("\n", "=" * 88, "\n")
-            print(f"Player {self.game.is_win(self.game.board)} wins!")
+        print(f"\nFinal board:")
+        print(
+            "Player0 | houses: ",
+            [self.game.board[i] for i in self.game.player_houses[0]],
+            " | pit: ",
+            self.game.board[self.game.player_pits[0]],
+        )
+        print(
+            "Player1 | houses: ",
+           [self.game.board[i] for i in self.game.player_houses[1]],
+            " | pit: ",
+            self.game.board[self.game.player_pits[1]],
+        )
+        print("\n", "=" * 88, "\n")
+        print(f"Player {self.game.is_win(self.game.board)} wins!")
 
 
 AI_CHOICES = {"minimax": MiniMaxPlayer, "alphabeta": AlphaBetaPlayer}

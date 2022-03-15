@@ -17,7 +17,7 @@ class GameScore(Heuristic):
     def score(self, board, player):
 
         if self.game.is_end_match(board):
-            score = board[self.game.player_houses[player]]
+            score = board[self.game.player_pits[player]]
             if score > 24:
                 score = 999
             elif score < 24:
@@ -35,7 +35,8 @@ class H1(Heuristic):
         super().__init__(game)
 
     def score(self, board, player):
-        pits = self.game.player_pits[player]
+        pits = self.game.player_houses[player]
+        print(pits)
         return sum([1 for pit in pits if board[pit] == 0])
 
 
@@ -46,7 +47,7 @@ class H2(Heuristic):
         super().__init__(game)
 
     def score(self, board, player):
-        pits = self.game.player_pits[player]
+        pits = self.game.player_houses[player]
         return sum([1 for pit in pits if board[pit] > 0])
 
 
@@ -56,10 +57,8 @@ class H3(Heuristic):
         super().__init__(game)
 
     def score(self, board, player):
-        store_player = self.get_player_store(board, player)
-        store_opposite_player = self.get_player_store(
-            board, self.game.opposite_player(player)
-        )
+        store_player = board[self.game.player_pits[player]]
+        store_opposite_player = board[self.game.player_pits[self.game.opposite_player(player)]]
         return store_player - store_opposite_player
 
 

@@ -118,7 +118,6 @@ class Mancala:
     def early_win(self, board, player) -> list:
         moves_left = self.get_legal_moves(board, player)
         if len(moves_left) == 0:
-            print(self.player_houses[self.opposite_player(player)])
             take_over_pebbles = sum(
                 [board[i] for i in self.player_houses[self.opposite_player(player)]]
             )
