@@ -15,15 +15,13 @@ class MiniMaxPlayer:
 
         return move
 
-    def minimax_algorithm(self, board, depth, player, maximizing=True):
+    def minimax_algorithm(self, board, depth, player, extra_turn=False):
 
-        # Change turns every repetition
-        if depth != self.max_depth:
+        # Change turns every repetition except in the beginning or if the player has an extra turn
+        if depth != self.max_depth and not extra_turn:
             player = self.game.opposite_player(player)
 
-        print(f"Depth is: {depth}, player {player}\n")
-        print(board)
-        print(f"\nAvailable moves are: {self.game.get_legal_moves(board, player)}\n")
+        maximizing = {0: True, 1: False}[player]
 
         # Has max depth been reached
         if self.game.is_end_match(board):
@@ -45,20 +43,12 @@ class MiniMaxPlayer:
             for move in self.game.get_legal_moves(board, player):
                 print(f"Maximizing - pick: {move}")
 
-                child_board, extra_turn = self.game.distr_pebbles(
-                    board, move, player, AI="eval"
-                )
+                child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
                 # Max of the max vs max of the min
-                if extra_turn:
-                    print("Getting an extra turn")
-                    value, _ = self.minimax_algorithm(
-                        child_board, depth - 1, player, True
-                    )
-                else:
-                    value, _ = self.minimax_algorithm(
-                        child_board, depth - 1, player, False
-                    )
+                value, _ = self.minimax_algorithm(
+                    child_board, depth - 1, player, extra_turn
+                )
 
                 if value > stored_value:
                     print(
@@ -77,19 +67,13 @@ class MiniMaxPlayer:
             for move in self.game.get_legal_moves(board, player):
                 print(f"Minimizing - pick: {move}")
 
-                child_board, extra_turn = self.game.distr_pebbles(
-                    board, move, player, AI="eval"
-                )
+                child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
                 # Min of the min vs min of the max
-                if extra_turn:
-                    value = self.minimax_algorithm(
-                        child_board, depth - 1, player, False
-                    )[0]
-                else:
-                    value = self.minimax_algorithm(
-                        child_board, depth - 1, player, True
-                    )[0]
+                value, _ = self.minimax_algorithm(
+                    child_board, depth - 1, player, extra_turn
+                )
+
                 if value < stored_value:
                     print(
                         f"The stored value {stored_value} was updated with {value} at move {move}"
