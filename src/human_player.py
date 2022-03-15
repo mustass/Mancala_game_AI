@@ -21,7 +21,3 @@ class UIPlayer:
 
     def dec(self):
         self.nxt_pos = max(self.nxt_pos - 1, 0)
-
-
-class AIPlayer:
-    pass

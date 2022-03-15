@@ -1,6 +1,6 @@
 import curses
 from mancala import Mancala
-from players import UIPlayer
+from human_player import UIPlayer
 
 
 class Window:
