@@ -11,8 +11,8 @@ class AlphaBetaPlayer:
         self.GameScore = GameScore(self.game)
         self.Heuristic = heuristic(self.game)
 
-        self.alpha = 1000000
-        self.beta = -1000000
+        self.alpha = -1000000
+        self.beta = 1000000
 
     def think(self, board, player):
 
