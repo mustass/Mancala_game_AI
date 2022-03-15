@@ -134,6 +134,7 @@ class Mancala:
         self.board = board
 
 
+
 if __name__ == "__main__":
     test = Mancala()
     test.distr_pebbles(test.board,3,0)
