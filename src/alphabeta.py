@@ -1,6 +1,6 @@
 from copy import deepcopy
-from .mancala import Mancala
-from .heuristics import GameScore, Heuristic
+from mancala import Mancala
+from heuristics import GameScore, Heuristic
 
 
 class AlphaBetaPlayer:
