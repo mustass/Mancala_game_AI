@@ -1,4 +1,4 @@
-from mancala import Mancala
+from .mancala import Mancala
 
 
 class Heuristic:

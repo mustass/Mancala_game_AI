@@ -1,6 +1,6 @@
 from copy import deepcopy
-from mancala import Mancala
-from heuristics import GameScore, Heuristic
+from .mancala import Mancala
+from .heuristics import GameScore, Heuristic
 
 
 class MiniMaxPlayer:
@@ -46,17 +46,11 @@ class MiniMaxPlayer:
             stored_value = -99999
             # Generate nodes
             for move in self.game.get_legal_moves(board, player):
-                print("-" * 88)
+                print("=" * 88)
                 print(f"Maximizing for player {player} - looking at move: {move}")
 
-                try:
-                    child_board, extra_turn = self.game.distr_pebbles(
-                        board, move, player
-                    )
-                except Exception as e:
-                    print(board)
-                    print(move)
-                    raise (e)
+                child_board, extra_turn = self.game.distr_pebbles(board, move, player)
+
                 # Max of the max vs max of the min
                 value, _ = self.minimax_algorithm(
                     child_board, depth - 1, player, extra_turn
@@ -72,7 +66,7 @@ class MiniMaxPlayer:
                 print(f"Stored value for MAX is: {stored_value}")
                 print(f"Stored best move for MAX is: {best_move}")
 
-                print("-" * 88)
+                print("=" * 88)
             return stored_value, move
         else:
             stored_value = 99999
