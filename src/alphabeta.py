@@ -16,15 +16,17 @@ class AlphaBetaPlayer:
 
     def think(self, board, player):
 
-        _, move = self.alpha_beta_algorithm(board, self.max_depth, player, self.alpha, self.beta)
+        _, move = self.alpha_beta_algorithm(
+            board, self.max_depth, player, self.alpha, self.beta
+        )
 
         return move
 
-    def alpha_beta_algorithm(self, board, depth, player, alpha, beta ,extra_turn=False):
+    def alpha_beta_algorithm(self, board, depth, player, alpha, beta, extra_turn=False):
 
         board = deepcopy(board)
         alpha = deepcopy(alpha)
-        beta  = deepcopy(beta)
+        beta = deepcopy(beta)
         # Change turns every repetition except in the beginning or if the player has an extra turn
         if depth != self.max_depth and not extra_turn:
             player = self.game.opposite_player(player)
@@ -75,10 +77,10 @@ class AlphaBetaPlayer:
                     best_move = move
 
                 alpha = max(alpha, stored_value)
-                
+
                 if alpha >= beta:
                     break
-                
+
                 print(f"Stored value for MAX is: {stored_value}")
                 print(f"Stored best move for MAX is: {best_move}")
 
@@ -106,10 +108,10 @@ class AlphaBetaPlayer:
                     best_move = move
 
                 beta = min(beta, stored_value)
-                
+
                 if beta <= self.alpha:
                     break
-                
+
                 print(f"Stored value for MIN is: {stored_value}")
                 print(f"Stored best move for MIN is: {best_move}")
                 print("-" * 88)

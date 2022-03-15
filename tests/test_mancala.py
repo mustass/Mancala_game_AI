@@ -15,22 +15,25 @@ def test_init():
 
 def test_legal_moves():
     test_game = Mancala(board=INITIAL_BOARD)
-    moves0 = test_game.get_legal_moves(0)
-    moves1 = test_game.get_legal_moves(1)
+    board = test_game.board
+    moves0 = test_game.get_legal_moves(board, 0)
+    moves1 = test_game.get_legal_moves(board, 1)
 
     assert moves0 == [0, 1, 2, 3, 4, 5]
     assert moves1 == [7, 8, 9, 10, 11, 12]
 
     test_game = Mancala(board=PLAYER_1_WINS_BOARD)
-    moves0 = test_game.get_legal_moves(0)
-    moves1 = test_game.get_legal_moves(1)
+    board = test_game.board
+    moves0 = test_game.get_legal_moves(board, 0)
+    moves1 = test_game.get_legal_moves(board, 1)
 
     assert moves0 == []
     assert moves1 == []
 
     test_game = Mancala(board=PLAYER_0_WINS_BOARD)
-    moves0 = test_game.get_legal_moves(0)
-    moves1 = test_game.get_legal_moves(1)
+    board = test_game.board
+    moves0 = test_game.get_legal_moves(board, 0)
+    moves1 = test_game.get_legal_moves(board, 1)
 
     assert moves0 == []
     assert moves1 == []
@@ -39,31 +42,36 @@ def test_legal_moves():
 def test_distribute_pebbles():
 
     test_game = Mancala(board=INITIAL_BOARD)
+    new_board, _ = test_game.distr_pebbles(test_game.board, 0, 0)
+    test_game.update_game_board(new_board)
 
-    test_game.distr_pebbles(0, 0)
-
-    assert test_game.board == [0, 5, 5, 5, 5, 4, 0, 4, 4, 4, 4, 4, 4, 0]
+    assert new_board == [0, 5, 5, 5, 5, 4, 0, 4, 4, 4, 4, 4, 4, 0]
 
     # Illegal move for Player 1 will trigger a fail
     try:
-        test_game.distr_pebbles(0, 1)
+        new_board, _ = test_game.distr_pebbles(test_game.board, 0, 1)
+        test_game.update_game_board(new_board)
     except AssertionError:
         assert test_game.board == [0, 5, 5, 5, 5, 4, 0, 4, 4, 4, 4, 4, 4, 0]
 
-    test_game.distr_pebbles(8, 1)
-    assert test_game.board == [0, 5, 5, 5, 5, 4, 0, 4, 0, 5, 5, 5, 5, 0]
+    new_board, _ = test_game.distr_pebbles(test_game.board, 8, 1)
+    test_game.update_game_board(new_board)
+    assert new_board == [0, 5, 5, 5, 5, 4, 0, 4, 0, 5, 5, 5, 5, 0]
 
-    test_game.distr_pebbles(3, 0)
-    assert test_game.board == [0, 5, 5, 0, 6, 5, 1, 5, 1, 5, 5, 5, 5, 0]
+    new_board, _ = test_game.distr_pebbles(test_game.board, 3, 0)
+    test_game.update_game_board(new_board)
+    assert new_board == [0, 5, 5, 0, 6, 5, 1, 5, 1, 5, 5, 5, 5, 0]
 
 
 def test_stealing_opponent_house():
     test_game = Mancala(STEALER_BOARD)
-    test_game.distr_pebbles(2, 0)
-    assert test_game.board == [0, 5, 0, 1, 6, 5, 6, 5, 1, 0, 4, 5, 5, 5]
+    new_board, _ = test_game.distr_pebbles(test_game.board, 2, 0)
+    test_game.update_game_board(new_board)
+    assert test_game.board == [0, 5, 0, 0, 6, 5, 7, 5, 1, 0, 4, 5, 5, 5]
 
 
 def test_early_win():
     test_game1 = Mancala(board=EARLY_WIN_BOARD)
-    test_game1.distr_pebbles(5, 0)
+    new_board, _ = test_game1.distr_pebbles(test_game1.board, 5, 0)
+    test_game1.update_game_board(new_board)
     assert test_game1.board == [0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 7]

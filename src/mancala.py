@@ -112,7 +112,7 @@ class Mancala:
             player_pit = self.player_pits[player]
             board[player_pit] += board[opposite_houses[player_house_index]]
             board[opposite_houses[player_house_index]] = 0
-            board[player_pit] +=1
+            board[player_pit] += 1
             board[house] = 0
 
         return board
@@ -136,6 +136,7 @@ class Mancala:
 
 
 if __name__ == "__main__":
-    test = Mancala()
-    test.distr_pebbles(test.board, 3, 0)
-    print(test.board)
+    test_game = Mancala(board=[4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0])
+    new_board = test_game.distr_pebbles(test_game.board, 0, 0)
+    test_game.update_game_board(new_board)
+    print(new_board)
