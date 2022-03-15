@@ -5,10 +5,10 @@ from src.alphabeta import AlphaBetaPlayer
 from src.minimax import MiniMaxPlayer
 from src.heuristics import *
 
-from .test_mancala import INITIAL_BOARD, STEALER_BOARD
+from .test_mancala import INITIAL_BOARD, STEALER_BOARD, EARLY_WIN_BOARD
 
 
-@pytest.mark.parametrize("board", [INITIAL_BOARD, STEALER_BOARD])
+@pytest.mark.parametrize("board", [INITIAL_BOARD, STEALER_BOARD, EARLY_WIN_BOARD])
 @pytest.mark.parametrize("heuristic", [H1, H2, H3, H4])
 @pytest.mark.parametrize("max_depth", [1, 2, 3, 4])
 
