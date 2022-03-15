@@ -11,19 +11,20 @@ class AlphaBetaPlayer:
         self.GameScore = GameScore(self.game)
         self.Heuristic = heuristic(self.game)
 
-        self.beta = 1000000
-        self.alpha = -1000000
+        self.alpha = 1000000
+        self.beta = -1000000
 
     def think(self, board, player):
 
-        _, move = self.alpha_beta_algorithm(board, self.max_depth, player)
+        _, move = self.alpha_beta_algorithm(board, self.max_depth, player, self.alpha, self.beta)
 
         return move
 
-    def alpha_beta_algorithm(self, board, depth, player, extra_turn=False):
+    def alpha_beta_algorithm(self, board, depth, player, alpha, beta ,extra_turn=False):
 
         board = deepcopy(board)
-
+        alpha = deepcopy(alpha)
+        beta  = deepcopy(beta)
         # Change turns every repetition except in the beginning or if the player has an extra turn
         if depth != self.max_depth and not extra_turn:
             player = self.game.opposite_player(player)
@@ -63,7 +64,7 @@ class AlphaBetaPlayer:
                     raise (e)
                 # Max of the max vs max of the min
                 value, _ = self.alpha_beta_algorithm(
-                    child_board, depth - 1, player, extra_turn
+                    child_board, depth - 1, player, alpha, beta, extra_turn
                 )
 
                 if value > stored_value:
@@ -73,10 +74,11 @@ class AlphaBetaPlayer:
                     stored_value = value
                     best_move = move
 
-                if value >= self.beta:
+                alpha = max(alpha, stored_value)
+                
+                if alpha >= beta:
                     break
-                self.alpha = max(self.alpha, stored_value)
-
+                
                 print(f"Stored value for MAX is: {stored_value}")
                 print(f"Stored best move for MAX is: {best_move}")
 
@@ -93,7 +95,7 @@ class AlphaBetaPlayer:
 
                 # Min of the min vs min of the max
                 value, _ = self.alpha_beta_algorithm(
-                    child_board, depth - 1, player, extra_turn
+                    child_board, depth - 1, player, alpha, beta, extra_turn
                 )
 
                 if value < stored_value:
@@ -103,10 +105,11 @@ class AlphaBetaPlayer:
                     stored_value = value
                     best_move = move
 
-                if value <= self.alpha:
+                beta = min(beta, stored_value)
+                
+                if beta <= self.alpha:
                     break
-                self.beta = min(self.beta, stored_value)
-
+                
                 print(f"Stored value for MIN is: {stored_value}")
                 print(f"Stored best move for MIN is: {best_move}")
                 print("-" * 88)
