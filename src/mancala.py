@@ -98,7 +98,7 @@ class Mancala:
         return board, extra_turn
 
     def capture_opposite_house(self, board, player, house) -> list:
-        # TODO Own one pebble --> own pit
+
         if not self.is_plyr_house(house, player):
             return board
         player_houses = self.player_houses[player]
@@ -112,6 +112,8 @@ class Mancala:
             player_pit = self.player_pits[player]
             board[player_pit] += board[opposite_houses[player_house_index]]
             board[opposite_houses[player_house_index]] = 0
+            board[player_pit] +=1
+            board[house] = 0
 
         return board
 
