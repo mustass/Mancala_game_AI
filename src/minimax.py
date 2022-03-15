@@ -19,7 +19,7 @@ class MiniMaxPlayer:
 
         # Change turns every repetition
         if depth != self.max_depth:
-            player = self.game.switch_player(player)
+            player = self.game.opposite_player(player)
 
         print(f"Depth is: {depth}, player {player}\n")
         print(board)
