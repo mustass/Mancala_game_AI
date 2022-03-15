@@ -16,14 +16,16 @@ class GameScore(Heuristic):
 
     def score(self, board, player):
 
-        if self.game.is_end_match(board):
-            score = board[self.game.player_pits[player]]
-            if score > 24:
-                score = 999
-            elif score < 24:
-                score = -999
-            else:
-                score = 0
+        assert self.game.is_end_match(board), "The game has to be ended if we are to calculate the game score."
+
+        score = board[self.game.player_pits[player]]
+
+        if score > 24:
+            score = 999
+        elif score < 24:
+            score = -999
+        else:
+            score = 0
 
         return score
 
