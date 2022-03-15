@@ -17,9 +17,9 @@ class MiniMaxPlayer:
         return move
 
     def minimax_algorithm(self, board, depth, player, extra_turn=False):
-        
+
         board = deepcopy(board)
-        
+
         # Change turns every repetition except in the beginning or if the player has an extra turn
         if depth != self.max_depth and not extra_turn:
             player = self.game.opposite_player(player)
@@ -50,11 +50,13 @@ class MiniMaxPlayer:
                 print(f"Maximizing for player {player} - looking at move: {move}")
 
                 try:
-                    child_board, extra_turn = self.game.distr_pebbles(board, move, player)
+                    child_board, extra_turn = self.game.distr_pebbles(
+                        board, move, player
+                    )
                 except Exception as e:
                     print(board)
                     print(move)
-                    raise(e)
+                    raise (e)
                 # Max of the max vs max of the min
                 value, _ = self.minimax_algorithm(
                     child_board, depth - 1, player, extra_turn
@@ -69,7 +71,7 @@ class MiniMaxPlayer:
 
                 print(f"Stored value for MAX is: {stored_value}")
                 print(f"Stored best move for MAX is: {best_move}")
-                
+
                 print("-" * 88)
             return stored_value, move
         else:

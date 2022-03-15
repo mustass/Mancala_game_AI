@@ -58,7 +58,9 @@ class H3(Heuristic):
 
     def score(self, board, player):
         store_player = board[self.game.player_pits[player]]
-        store_opposite_player = board[self.game.player_pits[self.game.opposite_player(player)]]
+        store_opposite_player = board[
+            self.game.player_pits[self.game.opposite_player(player)]
+        ]
         return store_player - store_opposite_player
 
 
