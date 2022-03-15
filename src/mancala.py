@@ -73,8 +73,8 @@ class Mancala:
         self.player = self.opposite_player(self.player)
 
     def distr_pebbles(self, board, house: Literal[PITS], player: int) -> tuple:
-        assert house in self.get_legal_moves(board,
-            player
+        assert house in self.get_legal_moves(
+            board, player
         ), f"The chosen house {house} is not in the set of legal moves for player {player}"
 
         pebbles = board[house]
@@ -134,8 +134,7 @@ class Mancala:
         self.board = board
 
 
-
 if __name__ == "__main__":
     test = Mancala()
-    test.distr_pebbles(test.board,3,0)
+    test.distr_pebbles(test.board, 3, 0)
     print(test.board)

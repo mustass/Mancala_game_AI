@@ -1,8 +1,9 @@
 from typing import Literal
 from mancala import Mancala
 
+
 class UIPlayer:
-    def __init__(self, game:Mancala, player_number: Literal[0, 1]):
+    def __init__(self, game: Mancala, player_number: Literal[0, 1]):
         self.game = game
         self.player_number = player_number
         self.nxt_pos = 0

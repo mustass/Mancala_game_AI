@@ -1,12 +1,13 @@
 from mancala import Mancala
 
+
 class Heuristic:
-    
-    def __init__(self, game:Mancala) -> None:
+    def __init__(self, game: Mancala) -> None:
         self.game = game
 
     def score(self, board, player):
         pass
+
 
 class GameScore(Heuristic):
     # Just game score
@@ -32,15 +33,15 @@ class H1(Heuristic):
 
     def __init__(self, game: Mancala) -> None:
         super().__init__(game)
-    
+
     def score(self, board, player):
         pits = self.game.player_pits[player]
         return sum([1 for pit in pits if board[pit] == 0])
 
 
 class H2(Heuristic):
-     # Have as many moves as possible (opposite of H1 essentially)
-    
+    # Have as many moves as possible (opposite of H1 essentially)
+
     def __init__(self, game: Mancala) -> None:
         super().__init__(game)
 
@@ -56,8 +57,11 @@ class H3(Heuristic):
 
     def score(self, board, player):
         store_player = self.get_player_store(board, player)
-        store_opposite_player = self.get_player_store(board, self.game.opposite_player(player))
+        store_opposite_player = self.get_player_store(
+            board, self.game.opposite_player(player)
+        )
         return store_player - store_opposite_player
+
 
 class H4(Heuristic):
     # Maximize the number of pebbles next to player's own pit
@@ -65,7 +69,8 @@ class H4(Heuristic):
         super().__init__(game)
 
     def score(self, board, player):
-        return board[self.game.player_pits[player]-1]
+        return board[self.game.player_pits[player] - 1]
+
 
 class Composite(Heuristic):
     # When we want a composite one
@@ -78,4 +83,9 @@ class Composite(Heuristic):
         self.four = H4()
 
     def score(self, board, player):
-        return self.one.score(board, player) + self.two.score(board, player) + self.three.score(board, player) + 0.1*self.four.score(board, player)
+        return (
+            self.one.score(board, player)
+            + self.two.score(board, player)
+            + self.three.score(board, player)
+            + 0.1 * self.four.score(board, player)
+        )
