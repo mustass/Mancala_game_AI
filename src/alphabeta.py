@@ -85,7 +85,7 @@ class AlphaBetaPlayer:
                 print(f"Stored best move for MAX is: {best_move}")
 
                 print("-" * 88)
-            return stored_value, move
+            return stored_value, best_move
         else:
             stored_value = 99999
 
@@ -115,4 +115,4 @@ class AlphaBetaPlayer:
                 print(f"Stored value for MIN is: {stored_value}")
                 print(f"Stored best move for MIN is: {best_move}")
                 print("-" * 88)
-            return stored_value, move
+            return stored_value, best_move
