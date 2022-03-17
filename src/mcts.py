@@ -4,7 +4,7 @@ from typing import Literal
 from mancala import Mancala
 from copy import deepcopy
 
-#random.seed(10)
+# random.seed(10)
 class MCTSNode:
     def __init__(
         self, move: int, player: Literal[0, 1], parent=None
@@ -13,17 +13,11 @@ class MCTSNode:
         self.wins, self.visits = 0, 0
 
     def expand_node(
-        self,
-        is_terminal_node: bool,
-        func_get_legal_moves,
-        board: list,
-        player: int,
+        self, is_terminal_node: bool, func_get_legal_moves, board: list, player: int,
     ):
         if not is_terminal_node:
             for move in func_get_legal_moves(board, player):
-                nc = MCTSNode(
-                    move, player, self
-                )  # new child node
+                nc = MCTSNode(move, player, self)  # new child node
                 self.children.append(nc)
 
     def update(self, r):
@@ -67,7 +61,7 @@ class MonteCarloPlayer:
                 n = self.tree_policy_child(n)
                 moves_seq.append((n.move, n.player))
 
-            if len(moves_seq)>0:
+            if len(moves_seq) > 0:
                 _board, _player = self.play_game_sequence(_board, moves_seq)
             n.expand_node(
                 self.game.is_end_match(_board),
@@ -84,14 +78,14 @@ class MonteCarloPlayer:
             while n.has_parent:  # propagate
                 n.update(result)
                 n = n.parent
-            #Root node has to be updated as well
+            # Root node has to be updated as well
             n.update(result)
 
         return self.select_action(root_node)
 
     def tree_policy_child(self, node: MCTSNode):
         assert not node.is_leaf, "The node must be expanded"
-        
+
         if all([child.visits == 0 for child in node.children]):
             return node.children[0]
         else:

@@ -102,12 +102,12 @@ class Match:
                 print("\n", "=" * 88, "\n")
             try:
                 move = {0: self.player_0, 1: self.player_1}[self.game.player].think(
-                self.game.board, self.game.player
-            )
-            except AssertionError: 
-                print(self.game.board) 
+                    self.game.board, self.game.player
+                )
+            except AssertionError:
+                print(self.game.board)
                 print(self.game.player)
-                raise(AssertionError)
+                raise (AssertionError)
 
             if verbose:
                 print(f"Player {self.game.player} chose move {move}")
@@ -117,10 +117,10 @@ class Match:
                 next_board, extra_move = self.game.distr_pebbles(
                     self.game.board, move, self.game.player
                 )
-            except AssertionError: 
-                print(self.game.board) 
+            except AssertionError:
+                print(self.game.board)
                 print(move, self.game.player)
-                raise(AssertionError)
+                raise (AssertionError)
             self.game.update_game_board(next_board)
 
             if not extra_move:

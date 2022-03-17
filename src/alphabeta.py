@@ -84,7 +84,9 @@ class AlphaBetaPlayer:
 
             for move in self.game.get_legal_moves(board, player):
                 print("-" * 88)
-                print(f"Minimizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}")
+                print(
+                    f"Minimizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}"
+                )
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
                 # Min of the min vs min of the max

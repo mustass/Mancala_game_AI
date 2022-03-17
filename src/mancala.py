@@ -120,7 +120,7 @@ class Mancala:
         return board
 
     def early_win(self, board, player) -> list:
-        for player in [0,1]:
+        for player in [0, 1]:
             moves_left = self.get_legal_moves(board, player)
             if len(moves_left) == 0:
                 take_over_pebbles = sum(
