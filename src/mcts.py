@@ -4,7 +4,7 @@ from typing import Literal
 from mancala import Mancala
 from copy import deepcopy
 
-
+#random.seed(10)
 class MCTSNode:
     def __init__(
         self, move: int, player: Literal[0, 1], parent=None
@@ -14,21 +14,15 @@ class MCTSNode:
 
     def expand_node(
         self,
-        func_check_terminal: function,
-        func_get_legal_moves: function,
-        func_get_extra_move: function,
+        is_terminal_node: bool,
+        func_get_legal_moves,
         board: list,
         player: int,
     ):
-        if not func_check_terminal(board):
+        if not is_terminal_node:
             for move in func_get_legal_moves(board, player):
-                # This is to know if there is an extra move
-                _, extra_move = func_get_extra_move(board, move, player)
-                # Naive next player
-                child_player = 0 if self.player == 1 else 1
-                # Make sure to pass the correct next player
                 nc = MCTSNode(
-                    move, player if extra_move else child_player, self
+                    move, player, self
                 )  # new child node
                 self.children.append(nc)
 
@@ -46,6 +40,8 @@ class MCTSNode:
 
     @property
     def UCB(self):
+        if self.visits == 0:
+            return 1e5
         return self.wins / self.visits + math.sqrt(
             2 * math.log(self.parent.visits) / self.visits
         )
@@ -58,52 +54,54 @@ class MonteCarloPlayer:
 
     def think(self, board, player):
 
-        _, move = self.mcts_algorithm(board, player, self.num_iterations)
+        _, move = self.mcts_algorithm(board, player)
 
         return move
 
     def mcts_algorithm(self, board, player):
         root_node = MCTSNode(None, player, None)
-
         for _ in range(self.num_iterations):
-            n, board = root_node, deepcopy(board)
+            n, _board, _player = root_node, deepcopy(board), deepcopy(player)
             moves_seq = []
-            while not n.is_leaf():  # select leaf
+            while not n.is_leaf:  # select leaf
                 n = self.tree_policy_child(n)
                 moves_seq.append((n.move, n.player))
 
-            board, player = self.play_game_sequence(board, moves_seq)
-
+            if len(moves_seq)>0:
+                _board, _player = self.play_game_sequence(_board, moves_seq)
             n.expand_node(
-                self.game.is_end_match, self.game.get_legal_moves, board, player
+                self.game.is_end_match(_board),
+                self.game.get_legal_moves,
+                _board,
+                _player,
             )  # expand
+            if not self.game.is_end_match(_board):
+                n = self.tree_policy_child(n)
 
-            n = self.tree_policy_child(n)
-
-            while not self.game.is_end_match(board):  # simulate
-                board, player = self.simulation_policy_child(board, player)
-            result = self.score_outcome(board, root_node)
-            while n.has_parent():  # propagate
+            while not self.game.is_end_match(_board):  # simulate
+                _board, _player = self.simulation_policy_child(_board, _player)
+            result = self.score_outcome(_board, root_node)
+            while n.has_parent:  # propagate
                 n.update(result)
                 n = n.parent
+            #Root node has to be updated as well
+            n.update(result)
 
         return self.select_action(root_node)
 
     def tree_policy_child(self, node: MCTSNode):
-
-        if not node.is_leaf:
+        assert not node.is_leaf, "The node must be expanded"
+        
+        if all([child.visits == 0 for child in node.children]):
+            return node.children[0]
+        else:
             selected_node = None
-            ucb = 0
+            ucb = -1
             for nd in node.children:
                 if nd.UCB > ucb:
                     selected_node = nd
                     ucb = nd.UCB
             return selected_node
-        else:
-            if node.visits == 0:
-                return node
-            else:
-                return node.children[0]
 
     def select_action(self, root_node: MCTSNode):
         selected_node = None
@@ -117,7 +115,7 @@ class MonteCarloPlayer:
     def simulation_policy_child(self, board, player):
         available_moves = self.game.get_legal_moves(board, player)
         move = random.choice(available_moves)
-        board, player = self.play_game_sequence(board, (move, player))
+        board, player = self.play_game_sequence(board, [(move, player)])
         return board, player
 
     def score_outcome(self, board, root_node: MCTSNode):
