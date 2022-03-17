@@ -3,6 +3,7 @@ from copy import deepcopy
 from mancala import Mancala
 from alphabeta import AlphaBetaPlayer
 from minimax import MiniMaxPlayer
+from mcts import MonteCarloPlayer
 from heuristics import *
 
 
@@ -53,6 +54,22 @@ def get_args():
         "-md1", "--max_depth_1", type=int, help="Max depth for AI player 1", default=2
     )
 
+    parser.add_argument(
+        "-mcts_n0",
+        "--mcts_number_of_it_0",
+        type=int,
+        help="Number of iterations for MCTS if AI player 0",
+        default=10,
+    )
+
+    parser.add_argument(
+        "-mcts_n1",
+        "--mcts_number_of_it_1",
+        type=int,
+        help="Number of iterations for MCTS if AI player 0",
+        default=10,
+    )
+
     return parser.parse_args()
 
 
@@ -83,18 +100,27 @@ class Match:
                     self.game.board[self.game.player_pits[1]],
                 )
                 print("\n", "=" * 88, "\n")
-
-            move = {0: self.player_0, 1: self.player_1}[self.game.player].think(
-                self.game.board, self.game.player
-            )
+            try:
+                move = {0: self.player_0, 1: self.player_1}[self.game.player].think(
+                    self.game.board, self.game.player
+                )
+            except AssertionError:
+                print(self.game.board)
+                print(self.game.player)
+                raise (AssertionError)
 
             if verbose:
                 print(f"Player {self.game.player} chose move {move}")
                 print("\n", "=" * 88, "\n")
 
-            next_board, extra_move = self.game.distr_pebbles(
-                self.game.board, move, self.game.player
-            )
+            try:
+                next_board, extra_move = self.game.distr_pebbles(
+                    self.game.board, move, self.game.player
+                )
+            except AssertionError:
+                print(self.game.board)
+                print(move, self.game.player)
+                raise (AssertionError)
             self.game.update_game_board(next_board)
 
             if not extra_move:
@@ -119,7 +145,11 @@ class Match:
         print(f"Player {self.game.is_win(self.game.board)} wins!")
 
 
-AI_CHOICES = {"minimax": MiniMaxPlayer, "alphabeta": AlphaBetaPlayer}
+AI_CHOICES = {
+    "minimax": MiniMaxPlayer,
+    "alphabeta": AlphaBetaPlayer,
+    "mcts": MonteCarloPlayer,
+}
 
 HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Composite}
 
@@ -128,12 +158,19 @@ def main():
     args = get_args()
     game = Mancala()
 
-    player_0 = AI_CHOICES[args.player0](
-        game, args.max_depth_0, HEURISTIC_CHOICES[args.heuristic0]
-    )
-    player_1 = AI_CHOICES[args.player1](
-        game, args.max_depth_1, HEURISTIC_CHOICES[args.heuristic1]
-    )
+    if AI_CHOICES[args.player0] is MonteCarloPlayer:
+        player_0 = AI_CHOICES[args.player0](game, args.mcts_number_of_it_0)
+    else:
+        player_0 = AI_CHOICES[args.player0](
+            game, args.max_depth_0, HEURISTIC_CHOICES[args.heuristic0]
+        )
+
+    if AI_CHOICES[args.player1] is MonteCarloPlayer:
+        player_1 = AI_CHOICES[args.player1](game, args.mcts_number_of_it_1)
+    else:
+        player_1 = AI_CHOICES[args.player1](
+            game, args.max_depth_1, HEURISTIC_CHOICES[args.heuristic1]
+        )
 
     match = Match(game, player_0, player_1)
 

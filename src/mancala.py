@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Literal
 
 
@@ -73,6 +74,7 @@ class Mancala:
         self.player = self.opposite_player(self.player)
 
     def distr_pebbles(self, board, house: Literal[PITS], player: int) -> tuple:
+        board = deepcopy(board)
         assert house in self.get_legal_moves(
             board, player
         ), f"The chosen house {house} is not in the set of legal moves for player {player}"
@@ -118,16 +120,17 @@ class Mancala:
         return board
 
     def early_win(self, board, player) -> list:
-        moves_left = self.get_legal_moves(board, player)
-        if len(moves_left) == 0:
-            take_over_pebbles = sum(
-                [board[i] for i in self.player_houses[self.opposite_player(player)]]
-            )
-            board[self.player_pits[player]] += take_over_pebbles
+        for player in [0, 1]:
+            moves_left = self.get_legal_moves(board, player)
+            if len(moves_left) == 0:
+                take_over_pebbles = sum(
+                    [board[i] for i in self.player_houses[self.opposite_player(player)]]
+                )
+                board[self.player_pits[player]] += take_over_pebbles
 
-            for index, element in enumerate(self.board):
-                if index in self.player_houses[self.opposite_player(player)]:
-                    board[index] = 0
+                for index, element in enumerate(self.board):
+                    if index in self.player_houses[self.opposite_player(player)]:
+                        board[index] = 0
 
         return board
 

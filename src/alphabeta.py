@@ -54,7 +54,10 @@ class AlphaBetaPlayer:
             # Generate nodes
             for move in self.game.get_legal_moves(board, player):
                 print("-" * 88)
-                print(f"Maximizing for player {player} - looking at move: {move}")
+                print(
+                    f"Maximizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}\n"
+                )
+                print(board)
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
                 # Max of the max vs max of the min
@@ -64,7 +67,7 @@ class AlphaBetaPlayer:
 
                 if value > stored_value:
                     print(
-                        f"The stored value {stored_value} was updated with {value} after move {move}"
+                        f"The stored value {stored_value} was updated with {value} after move {move} "
                     )
                     stored_value = value
                     best_move = move
@@ -84,7 +87,10 @@ class AlphaBetaPlayer:
 
             for move in self.game.get_legal_moves(board, player):
                 print("-" * 88)
-                print(f"Minimizing for player {player} - looking at move: {move}")
+                print(
+                    f"Minimizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}"
+                )
+                print(board)
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
