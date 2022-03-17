@@ -56,14 +56,7 @@ class AlphaBetaPlayer:
                 print("-" * 88)
                 print(f"Maximizing for player {player} - looking at move: {move}")
 
-                try:
-                    child_board, extra_turn = self.game.distr_pebbles(
-                        board, move, player
-                    )
-                except Exception as e:
-                    print(board)
-                    print(move)
-                    raise (e)
+                child_board, extra_turn = self.game.distr_pebbles(board, move, player)
                 # Max of the max vs max of the min
                 value, _ = self.alpha_beta_algorithm(
                     child_board, depth - 1, player, alpha, beta, extra_turn

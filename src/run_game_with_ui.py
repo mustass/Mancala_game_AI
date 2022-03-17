@@ -6,9 +6,14 @@ from minimax import MiniMaxPlayer
 from alphabeta import AlphaBetaPlayer
 from heuristics import *
 
-PLAYER_CHOICES = {"human": UIPlayer, "minimax": MiniMaxPlayer, "alphabeta": AlphaBetaPlayer}
+PLAYER_CHOICES = {
+    "human": UIPlayer,
+    "minimax": MiniMaxPlayer,
+    "alphabeta": AlphaBetaPlayer,
+}
 
 HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Composite}
+
 
 def get_args():
     parser = ArgumentParser(description="Evaluation argument parser")
@@ -61,7 +66,7 @@ def get_args():
 
 
 class Window:
-    def __init__(self, stdscr, player_0_args:dict, player_1_args:dict):
+    def __init__(self, stdscr, player_0_args: dict, player_1_args: dict):
         self.screen = stdscr
         curses.curs_set(0)
         self.colors = self.setup_colors()
@@ -86,16 +91,20 @@ class Window:
 
     def new_game(self):
         game = Mancala()
-        
+
         if self.player_0_args["player_type"] is UIPlayer:
-            player_0 = self.player_0_args["player_type"](game,0)
+            player_0 = self.player_0_args["player_type"](game, 0)
         else:
-            player_0 = self.player_0_args["player_type"](game, self.player_0_args["max_depth"] ,self.player_0_args["heuristic"])
+            player_0 = self.player_0_args["player_type"](
+                game, self.player_0_args["max_depth"], self.player_0_args["heuristic"]
+            )
 
         if self.player_1_args["player_type"] is UIPlayer:
-            player_1 = self.player_1_args["player_type"](game,1)
+            player_1 = self.player_1_args["player_type"](game, 1)
         else:
-            player_1 = self.player_1_args["player_type"](game, self.player_1_args["max_depth"] ,self.player_1_args["heuristic"])
+            player_1 = self.player_1_args["player_type"](
+                game, self.player_1_args["max_depth"], self.player_1_args["heuristic"]
+            )
 
         players = [player_0, player_1]
 
@@ -140,16 +149,16 @@ class Window:
                 if c == ord("n"):
                     self.body_state = "choices"
                 elif c == curses.KEY_LEFT:
-                    if isinstance(curr_player,UIPlayer):
+                    if isinstance(curr_player, UIPlayer):
                         curr_player.dec() if is_top_player else curr_player.inc()
                 elif c == curses.KEY_RIGHT:
-                    if isinstance(curr_player,UIPlayer):
+                    if isinstance(curr_player, UIPlayer):
                         curr_player.inc() if is_top_player else curr_player.dec()
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
-                    if not isinstance(curr_player,UIPlayer):
+                    if not isinstance(curr_player, UIPlayer):
                         next_move = curr_player.think(self.game.board, self.game.player)
                     else:
-                        next_move = curr_player.move  
+                        next_move = curr_player.move
                     if next_move is not None:
                         new_board, extra_move = self.game.distr_pebbles(
                             self.game.board, next_move, self.game.player
@@ -157,6 +166,8 @@ class Window:
                         self.game.update_game_board(new_board)
                         if not extra_move:
                             self.game.switch_player()
+                        if self.game.is_end_match(self.game.board):
+                            break
 
                 self.draw_body()
             curses.doupdate()
@@ -329,7 +340,9 @@ class Window:
             # Highlight next move
             curr_player = self.players[self.game.player]
             if isinstance(curr_player, UIPlayer):
-                move_idx = self.game.player * (self.game.board_sz + 1) + curr_player.nxt_pos
+                move_idx = (
+                    self.game.player * (self.game.board_sz + 1) + curr_player.nxt_pos
+                )
                 move_format = (
                     self.colors["green"] if self.game.player else self.colors["red"]
                 ) | (curses.A_UNDERLINE)
@@ -337,7 +350,9 @@ class Window:
                 if self.game.player == 0:
                     pos_x = ulx + (curr_player.nxt_pos + 1) * (width + 1) + (width) // 2
                 else:
-                    pos_x = lrx - (curr_player.nxt_pos + 1) * (width + 1) - (width) // 2 - 1
+                    pos_x = (
+                        lrx - (curr_player.nxt_pos + 1) * (width + 1) - (width) // 2 - 1
+                    )
                 self.body.addstr(
                     pos_y, pos_x, "%2d" % self.game.board[move_idx], move_format
                 )
@@ -348,7 +363,15 @@ class Window:
 if __name__ == "__main__":
     args = get_args()
 
-    player_0_args = {"player_type": PLAYER_CHOICES[args.player0], "heuristic": HEURISTIC_CHOICES[args.heuristic0], "max_depth": args.max_depth_0}
-    player_1_args = {"player_type": PLAYER_CHOICES[args.player1], "heuristic": HEURISTIC_CHOICES[args.heuristic1], "max_depth": args.max_depth_1}
+    player_0_args = {
+        "player_type": PLAYER_CHOICES[args.player0],
+        "heuristic": HEURISTIC_CHOICES[args.heuristic0],
+        "max_depth": args.max_depth_0,
+    }
+    player_1_args = {
+        "player_type": PLAYER_CHOICES[args.player1],
+        "heuristic": HEURISTIC_CHOICES[args.heuristic1],
+        "max_depth": args.max_depth_1,
+    }
 
     curses.wrapper(Window, player_0_args, player_1_args)
