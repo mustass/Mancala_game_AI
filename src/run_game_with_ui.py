@@ -224,13 +224,17 @@ class Window:
     def draw_gameover(self):
         self.body.clear()
         winner = self.game.is_win(self.game.board)
-        if winner is not None: 
-            if isinstance(self.players[winner], UIPlayer) and isinstance(self.players[self.game.opposite_player(winner)], UIPlayer):
+        if winner is not None:
+            if isinstance(self.players[winner], UIPlayer) and isinstance(
+                self.players[self.game.opposite_player(winner)], UIPlayer
+            ):
                 string = f"""
                     Well Done Player {winner}! 
                     You won with {self.game.board[self.game.player_pits[winner]]} points. 
                     """
-            elif isinstance(self.players[winner], UIPlayer) and not isinstance(self.players[self.game.opposite_player(winner)], UIPlayer):
+            elif isinstance(self.players[winner], UIPlayer) and not isinstance(
+                self.players[self.game.opposite_player(winner)], UIPlayer
+            ):
                 string = f"""
                     Well Done!
                     You defeated the AI with {self.game.board[self.game.player_pits[winner]]} points. 
@@ -249,7 +253,6 @@ class Window:
             self.body.addstr(idx, 0, line)
 
         self.body.noutrefresh()
-        
 
     def draw_help(self):
         self.body.clear()
