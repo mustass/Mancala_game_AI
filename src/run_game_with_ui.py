@@ -82,18 +82,18 @@ class Window:
         elif mode[0:1] == "MM":
             player_0 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
         elif mode[0:1] == "MC":
-            player_0 = MonteCarloPlayer(game, game, ai_args["mcts_numit"])
+            player_0 = MonteCarloPlayer(game, ai_args["mcts_numit"])
         else:
             raise ValueError
 
         if mode[-1] == "H":
             player_1 = UIPlayer(game, 1)
-        elif mode[-1] == "A":
+        elif mode[-2] == "A":
             player_1 = AlphaBetaPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
         elif mode[len(mode) - 2 :] == "MM":
             player_1 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
-        elif mode[len(mode) - 2 :] == "MC":
-            player_1 = MonteCarloPlayer(game, game, ai_args["mcts_numit"])
+        elif mode[len(mode) - 2 :] == "TS":
+            player_1 = MonteCarloPlayer(game, ai_args["mcts_numit"])
         else:
             raise ValueError
 
@@ -170,8 +170,12 @@ class Window:
                         if not extra_move:
                             self.game.switch_player()
                         if self.game.is_end_match(self.game.board):
-                            break
+                            self.body_state = "gameover"
+                self.draw_body()
 
+            elif self.body_state == "gameover":
+                if c == ord("n"):
+                    self.body_state = "choices"
                 self.draw_body()
             curses.doupdate()
 
@@ -214,6 +218,38 @@ class Window:
             self.draw_help()
         elif self.body_state == "choices":
             self.draw_choices()
+        elif self.body_state == "gameover":
+            self.draw_gameover()
+
+    def draw_gameover(self):
+        self.body.clear()
+        winner = self.game.is_win(self.game.board)
+        if winner is not None: 
+            if isinstance(self.players[winner], UIPlayer) and isinstance(self.players[self.game.opposite_player(winner)], UIPlayer):
+                string = f"""
+                    Well Done Player {winner}! 
+                    You won with {self.game.board[self.game.player_pits[winner]]} points. 
+                    """
+            elif isinstance(self.players[winner], UIPlayer) and not isinstance(self.players[self.game.opposite_player(winner)], UIPlayer):
+                string = f"""
+                    Well Done!
+                    You defeated the AI with {self.game.board[self.game.player_pits[winner]]} points. 
+                    """
+            else:
+                string = f"""
+                    Close but no cigar!
+                    You lost to AI with score {self.game.board[self.game.player_pits[winner]]} against  {self.game.board[self.game.player_pits[self.game.opposite_player(winner)]]}. 
+                    
+                    Try again. 
+                    """
+        else:
+            string = "It's a draw!"
+
+        for idx, line in enumerate(string.split("\n")):
+            self.body.addstr(idx, 0, line)
+
+        self.body.noutrefresh()
+        
 
     def draw_help(self):
         self.body.clear()
