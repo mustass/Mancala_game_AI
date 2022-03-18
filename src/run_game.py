@@ -4,6 +4,7 @@ from mancala import Mancala
 from alphabeta import AlphaBetaPlayer
 from minimax import MiniMaxPlayer
 from mcts import MonteCarloPlayer
+from naive_maximizer import NaiveMaximizerPlayer
 from heuristics import *
 
 
@@ -100,27 +101,20 @@ class Match:
                     self.game.board[self.game.player_pits[1]],
                 )
                 print("\n", "=" * 88, "\n")
-            try:
-                move = {0: self.player_0, 1: self.player_1}[self.game.player].think(
+            
+            move = {0: self.player_0, 1: self.player_1}[self.game.player].think(
                     self.game.board, self.game.player
                 )
-            except AssertionError:
-                print(self.game.board)
-                print(self.game.player)
-                raise (AssertionError)
 
             if verbose:
                 print(f"Player {self.game.player} chose move {move}")
                 print("\n", "=" * 88, "\n")
 
-            try:
-                next_board, extra_move = self.game.distr_pebbles(
+
+            next_board, extra_move = self.game.distr_pebbles(
                     self.game.board, move, self.game.player
                 )
-            except AssertionError:
-                print(self.game.board)
-                print(move, self.game.player)
-                raise (AssertionError)
+
             self.game.update_game_board(next_board)
 
             if not extra_move:
@@ -149,6 +143,7 @@ AI_CHOICES = {
     "minimax": MiniMaxPlayer,
     "alphabeta": AlphaBetaPlayer,
     "mcts": MonteCarloPlayer,
+    "naive_max": NaiveMaximizerPlayer,
 }
 
 HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Composite}
@@ -157,9 +152,11 @@ HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Compos
 def main():
     args = get_args()
     game = Mancala()
-
+    print(args)
     if AI_CHOICES[args.player0] is MonteCarloPlayer:
         player_0 = AI_CHOICES[args.player0](game, args.mcts_number_of_it_0)
+    elif AI_CHOICES[args.player0] is NaiveMaximizerPlayer:
+        player_0 = AI_CHOICES[args.player0](game)
     else:
         player_0 = AI_CHOICES[args.player0](
             game, args.max_depth_0, HEURISTIC_CHOICES[args.heuristic0]
@@ -167,6 +164,8 @@ def main():
 
     if AI_CHOICES[args.player1] is MonteCarloPlayer:
         player_1 = AI_CHOICES[args.player1](game, args.mcts_number_of_it_1)
+    elif AI_CHOICES[args.player1] is NaiveMaximizerPlayer:
+        player_1 = AI_CHOICES[args.player1](game)
     else:
         player_1 = AI_CHOICES[args.player1](
             game, args.max_depth_1, HEURISTIC_CHOICES[args.heuristic1]
