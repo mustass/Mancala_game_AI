@@ -53,7 +53,7 @@ This will use H1 heuristic for the MiniMax or Alphabeta algorithms and will run 
 
 Note that to run the move of the AI, just press ENTER when it is not your turn. 
 
-### How to run `run_game_with_ui.py`:
+### How to run `run_game.py`:
 
 This script is used for experiments where AIs are playing against each other with different configurations.
 The following arguments are expected: 
