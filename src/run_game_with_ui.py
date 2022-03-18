@@ -5,15 +5,17 @@ from human_player import UIPlayer
 from minimax import MiniMaxPlayer
 from alphabeta import AlphaBetaPlayer
 from mcts import MonteCarloPlayer
+from naive_maximizer import NaiveMaximizerPlayer
 from heuristics import *
 
-GAME_MODES = ["HvsH", "HvsMM", "HvsAB", "HvsMCTS", "MMvsH", "ABvsH", "MCTSvsH"]
+GAME_MODES = ["HvsH", "HvsMM", "HvsAB", "HvsMCTS", "MMvsH", "ABvsH", "MCTSvsH", "NvsH", "HvsN"]
 
 PLAYER_CHOICES = {
     "human": UIPlayer,
     "minimax": MiniMaxPlayer,
     "alphabeta": AlphaBetaPlayer,
     "mcts": MonteCarloPlayer,
+    "naive_max": NaiveMaximizerPlayer,
 }
 
 HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Composite}
@@ -83,6 +85,8 @@ class Window:
             player_0 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
         elif mode[0:1] == "MC":
             player_0 = MonteCarloPlayer(game, ai_args["mcts_numit"])
+        elif mode[0] == "N":
+            player_0 = NaiveMaximizerPlayer(game)
         else:
             raise ValueError
 
@@ -94,6 +98,8 @@ class Window:
             player_1 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
         elif mode[len(mode) - 2 :] == "TS":
             player_1 = MonteCarloPlayer(game, ai_args["mcts_numit"])
+        elif mode[-1] == "N":
+            player_1 = NaiveMaximizerPlayer(game)
         else:
             raise ValueError
 
@@ -143,6 +149,12 @@ class Window:
                     self.body_state = "game"
                 elif c == ord("7"):
                     self.game, self.players = self.new_game(GAME_MODES[6], self.ai_args)
+                    self.body_state = "game"
+                elif c == ord("8"):
+                    self.game, self.players = self.new_game(GAME_MODES[7], self.ai_args)
+                    self.body_state = "game"
+                elif c == ord("9"):
+                    self.game, self.players = self.new_game(GAME_MODES[8], self.ai_args)
                     self.body_state = "game"
                 self.draw_body()
 
@@ -286,6 +298,8 @@ class Window:
                 - 5: MiniMax AI vs. Human 
                 - 6: AlfaBeta AI vs. Human
                 - 7: Monte Carlo Tree Search AI vs. Human 
+                - 8: Naive Maximizer vs. Human
+                - 9: Human vs. Naive Maximizer
         """
 
         for idx, line in enumerate(help_str.split("\n")):
