@@ -96,7 +96,7 @@ class Match:
                 )
                 print(
                     "Player1 | houses: ",
-                    [self.game.board[i] for i in self.game.player_houses[1]],
+                    [self.game.board[i] for i in self.game.player_houses[1][::-1]],
                     " | pit: ",
                     self.game.board[self.game.player_pits[1]],
                 )

@@ -22,7 +22,9 @@ class AlphaBetaPlayer:
 
         return move
 
-    def alpha_beta_algorithm(self, board, depth, player, alpha, beta, extra_turn=False):
+    def alpha_beta_algorithm(
+        self, board, depth, player, alpha, beta, extra_turn=False, verbose=False
+    ):
 
         board = deepcopy(board)
         alpha = deepcopy(alpha)
@@ -35,17 +37,19 @@ class AlphaBetaPlayer:
 
         # Has max depth been reached
         if self.game.is_end_match(board):
-            print("-" * 88)
             score = self.GameScore.score(board, player)
-            print(f"The game is over with the score {score}")
-            print("-" * 88)
+            if verbose:
+                print("-" * 88)
+                print(f"The game is over with the score {score}")
+                print("-" * 88)
             return score, None
 
         elif depth == 0:
-            print("-" * 88)
             score = self.Heuristic.score(board, player)
-            print(f"Reached max_depth with the score {score}")
-            print("-" * 88)
+            if verbose:
+                print("-" * 88)
+                print(f"Reached max_depth with the score {score}")
+                print("-" * 88)
             return score, None
 
         # Is it max or mins turn
@@ -53,11 +57,12 @@ class AlphaBetaPlayer:
             stored_value = -99999
             # Generate nodes
             for move in self.game.get_legal_moves(board, player):
-                print("-" * 88)
-                print(
-                    f"Maximizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}\n"
-                )
-                print(board)
+                if verbose:
+                    print("-" * 88)
+                    print(
+                        f"Maximizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}\n"
+                    )
+                    print(board)
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
                 # Max of the max vs max of the min
@@ -66,9 +71,10 @@ class AlphaBetaPlayer:
                 )
 
                 if value > stored_value:
-                    print(
-                        f"The stored value {stored_value} was updated with {value} after move {move} "
-                    )
+                    if verbose:
+                        print(
+                            f"The stored value {stored_value} was updated with {value} after move {move} "
+                        )
                     stored_value = value
                     best_move = move
 
@@ -76,21 +82,21 @@ class AlphaBetaPlayer:
 
                 if alpha >= beta:
                     break
-
-                print(f"Stored value for MAX is: {stored_value}")
-                print(f"Stored best move for MAX is: {best_move}")
-
-                print("-" * 88)
+                if verbose:
+                    print(f"Stored value for MAX is: {stored_value}")
+                    print(f"Stored best move for MAX is: {best_move}")
+                    print("-" * 88)
             return stored_value, best_move
         else:
             stored_value = 99999
 
             for move in self.game.get_legal_moves(board, player):
-                print("-" * 88)
-                print(
-                    f"Minimizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}"
-                )
-                print(board)
+                if verbose:
+                    print("-" * 88)
+                    print(
+                        f"Minimizing for player {player} - looking at move: {move} out of {self.game.get_legal_moves(board, player)}"
+                    )
+                    print(board)
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
@@ -100,9 +106,10 @@ class AlphaBetaPlayer:
                 )
 
                 if value < stored_value:
-                    print(
-                        f"The stored value {stored_value} was updated with {value} at move {move}"
-                    )
+                    if verbose:
+                        print(
+                            f"The stored value {stored_value} was updated with {value} at move {move}"
+                        )
                     stored_value = value
                     best_move = move
 
@@ -111,7 +118,8 @@ class AlphaBetaPlayer:
                 if beta <= self.alpha:
                     break
 
-                print(f"Stored value for MIN is: {stored_value}")
-                print(f"Stored best move for MIN is: {best_move}")
-                print("-" * 88)
+                if verbose:
+                    print(f"Stored value for MIN is: {stored_value}")
+                    print(f"Stored best move for MIN is: {best_move}")
+                    print("-" * 88)
             return stored_value, best_move

@@ -3,6 +3,7 @@ from typing import Literal
 
 
 PITS = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+INITIAL_BOARD = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
 
 
 class Mancala:
@@ -10,9 +11,7 @@ class Mancala:
     Model of the game
     """
 
-    def __init__(
-        self, board: list = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0], board_size=6
-    ) -> None:
+    def __init__(self, board: list = INITIAL_BOARD, board_size=6) -> None:
         assert len(board) == 14
         assert sum(board) == 48
 
