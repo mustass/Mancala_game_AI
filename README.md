@@ -11,7 +11,7 @@ The group implemented 4 algorithms to play the Human or AI vs AI. These are:
 - MiniMax
 - AlphaBeta
 - MCTS
-- Our own algorithm we call `exact agent` (?)
+- Our own algorithm we call `naive maximizer` (?)
 
 To run the experiments we use the `run_game.py` script that runs the game without a UI and does not allow for a human player. 
 To play against the AI using a Terminal UI, we run `run_game_with_ui.py`. The usage of these two scripts is explained below. 
