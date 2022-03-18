@@ -4,6 +4,7 @@ from mancala import Mancala
 from alphabeta import AlphaBetaPlayer
 from minimax import MiniMaxPlayer
 from mcts import MonteCarloPlayer
+from Exact_Agent import ExactAgentPlayer
 from heuristics import *
 
 
@@ -149,6 +150,7 @@ AI_CHOICES = {
     "minimax": MiniMaxPlayer,
     "alphabeta": AlphaBetaPlayer,
     "mcts": MonteCarloPlayer,
+    "Exact_Agent": ExactAgentPlayer,
 }
 
 HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Composite}
