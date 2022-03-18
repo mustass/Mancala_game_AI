@@ -152,10 +152,10 @@ HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Compos
 def main():
     args = get_args()
     game = Mancala()
-
+    print(args)
     if AI_CHOICES[args.player0] is MonteCarloPlayer:
         player_0 = AI_CHOICES[args.player0](game, args.mcts_number_of_it_0)
-    elif AI_CHOICES[args.player1] is NaiveMaximizerPlayer:
+    elif AI_CHOICES[args.player0] is NaiveMaximizerPlayer:
         player_0 = AI_CHOICES[args.player0](game)
     else:
         player_0 = AI_CHOICES[args.player0](

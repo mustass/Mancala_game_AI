@@ -290,7 +290,7 @@ class Window:
         self.body.clear()
 
         help_str = """
-            Choose Game Mode:
+            Choose Game Mode (Player 0 - Red vs. Player 1 - Green):
                 - 1: Human vs. Human
                 - 2: Human vs. MiniMax AI
                 - 3: Human vs. AlfaBeta AI
