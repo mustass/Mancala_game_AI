@@ -16,7 +16,7 @@ class MiniMaxPlayer:
 
         return move
 
-    def minimax_algorithm(self, board, depth, player, extra_turn=False):
+    def minimax_algorithm(self, board, depth, player, extra_turn=False, verbose=False):
 
         board = deepcopy(board)
 
@@ -28,17 +28,21 @@ class MiniMaxPlayer:
 
         # Has max depth been reached
         if self.game.is_end_match(board):
-            print("-" * 88)
+            if verbose:
+                print("-" * 88)
             score = self.GameScore.score(board, player)
-            print(f"The game is over with the score {score}")
-            print("-" * 88)
+            if verbose:
+                print(f"The game is over with the score {score}")
+                print("-" * 88)
             return score, None
 
         elif depth == 0:
-            print("-" * 88)
+            if verbose:
+                print("-" * 88)
             score = self.Heuristic.score(board, player)
-            print(f"Reached max_depth with the score {score}")
-            print("-" * 88)
+            if verbose:
+                print(f"Reached max_depth with the score {score}")
+                print("-" * 88)
             return score, None
 
         # Is it max or mins turn
@@ -46,8 +50,9 @@ class MiniMaxPlayer:
             stored_value = -99999
             # Generate nodes
             for move in self.game.get_legal_moves(board, player):
-                print("=" * 88)
-                print(f"Maximizing for player {player} - looking at move: {move}")
+                if verbose:
+                    print("=" * 88)
+                    print(f"Maximizing for player {player} - looking at move: {move}")
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
@@ -57,23 +62,25 @@ class MiniMaxPlayer:
                 )
 
                 if value > stored_value:
-                    print(
-                        f"The stored value {stored_value} was updated with {value} after move {move}"
-                    )
+                    if verbose:
+                        print(
+                            f"The stored value {stored_value} was updated with {value} after move {move}"
+                        )
                     stored_value = value
                     best_move = move
 
-                print(f"Stored value for MAX is: {stored_value}")
-                print(f"Stored best move for MAX is: {best_move}")
-
-                print("=" * 88)
+                if verbose:
+                    print(f"Stored value for MAX is: {stored_value}")
+                    print(f"Stored best move for MAX is: {best_move}")
+                    print("=" * 88)
             return stored_value, best_move
         else:
             stored_value = 99999
 
             for move in self.game.get_legal_moves(board, player):
-                print("-" * 88)
-                print(f"Minimizing for player {player} - looking at move: {move}")
+                if verbose:
+                    print("-" * 88)
+                    print(f"Minimizing for player {player} - looking at move: {move}")
 
                 child_board, extra_turn = self.game.distr_pebbles(board, move, player)
 
@@ -83,13 +90,15 @@ class MiniMaxPlayer:
                 )
 
                 if value < stored_value:
-                    print(
-                        f"The stored value {stored_value} was updated with {value} at move {move}"
-                    )
+                    if verbose:
+                        print(
+                            f"The stored value {stored_value} was updated with {value} at move {move}"
+                        )
                     stored_value = value
                     best_move = move
 
-                print(f"Stored value for MIN is: {stored_value}")
-                print(f"Stored best move for MIN is: {best_move}")
-                print("-" * 88)
+                if verbose:
+                    print(f"Stored value for MIN is: {stored_value}")
+                    print(f"Stored best move for MIN is: {best_move}")
+                    print("-" * 88)
             return stored_value, best_move

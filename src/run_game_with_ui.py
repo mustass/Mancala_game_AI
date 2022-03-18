@@ -1,15 +1,19 @@
 import curses
 from argparse import ArgumentParser
-from mancala import Mancala
+from mancala import Mancala, INITIAL_BOARD
 from human_player import UIPlayer
 from minimax import MiniMaxPlayer
 from alphabeta import AlphaBetaPlayer
+from mcts import MonteCarloPlayer
 from heuristics import *
+
+GAME_MODES = ["HvsH", "HvsMM", "HvsAB", "HvsMCTS", "MMvsH", "ABvsH", "MCTSvsH"]
 
 PLAYER_CHOICES = {
     "human": UIPlayer,
     "minimax": MiniMaxPlayer,
     "alphabeta": AlphaBetaPlayer,
+    "mcts": MonteCarloPlayer,
 }
 
 HEURISTIC_CHOICES = {"h1": H1, "h2": H2, "h3": H3, "h4": H4, "composite": Composite}
@@ -19,63 +23,41 @@ def get_args():
     parser = ArgumentParser(description="Evaluation argument parser")
 
     parser.add_argument(
-        "-p0",
-        "--player0",
+        "--heuristic",
         type=str,
-        required=True,
-        help="Type of player to play player 0",
-        default="human",
-    )
-
-    parser.add_argument(
-        "-p1",
-        "--player1",
-        type=str,
-        required=True,
-        help="Type of player to play player 1",
-        default="alphabeta",
-    )
-
-    parser.add_argument(
-        "-h0",
-        "--heuristic0",
-        type=str,
-        required=False,
-        help="Heuristic to use for AI player 0",
+        help="Heuristic to use for AI player when applicable.",
         default="h1",
     )
 
     parser.add_argument(
-        "-h1",
-        "--heuristic1",
-        type=str,
-        required=False,
-        help="Heuristic to use for AI player 1",
-        default="h1",
+        "-md",
+        "--max_depth",
+        type=int,
+        help="Max depth for AI player when applicable.",
+        default=2,
     )
 
     parser.add_argument(
-        "-md0", "--max_depth_0", type=int, help="Max depth for AI player 0", default=2
-    )
-
-    parser.add_argument(
-        "-md1", "--max_depth_1", type=int, help="Max depth for AI player 1", default=2
+        "-numit",
+        "--mcts_number_of_iterations",
+        type=int,
+        help="Number of iterations for AI with MCTS.",
+        default=10,
     )
 
     return parser.parse_args()
 
 
 class Window:
-    def __init__(self, stdscr, player_0_args: dict, player_1_args: dict):
+    def __init__(self, stdscr, ai_args: dict):
         self.screen = stdscr
         curses.curs_set(0)
         self.colors = self.setup_colors()
         self.body_state = "game"
 
-        self.player_0_args = player_0_args
-        self.player_1_args = player_1_args
+        self.ai_args = ai_args
 
-        self.game, self.players = self.new_game()
+        self.game, self.players = self.new_game("HvsH", self.ai_args)
 
         self.nrows, self.ncols = self.screen.getmaxyx()
         self.header = self.screen.subwin(1, self.ncols, 0, 0)
@@ -89,22 +71,31 @@ class Window:
         curses.doupdate()
         self.main_loop()
 
-    def new_game(self):
-        game = Mancala()
+    def new_game(self, mode: str, ai_args):
 
-        if self.player_0_args["player_type"] is UIPlayer:
-            player_0 = self.player_0_args["player_type"](game, 0)
-        else:
-            player_0 = self.player_0_args["player_type"](
-                game, self.player_0_args["max_depth"], self.player_0_args["heuristic"]
-            )
+        game = Mancala(board=INITIAL_BOARD)
 
-        if self.player_1_args["player_type"] is UIPlayer:
-            player_1 = self.player_1_args["player_type"](game, 1)
+        if mode[0] == "H":
+            player_0 = UIPlayer(game, 0)
+        elif mode[0] == "A":
+            player_0 = AlphaBetaPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
+        elif mode[0:1] == "MM":
+            player_0 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
+        elif mode[0:1] == "MC":
+            player_0 = MonteCarloPlayer(game, ai_args["mcts_numit"])
         else:
-            player_1 = self.player_1_args["player_type"](
-                game, self.player_1_args["max_depth"], self.player_1_args["heuristic"]
-            )
+            raise ValueError
+
+        if mode[-1] == "H":
+            player_1 = UIPlayer(game, 1)
+        elif mode[-2] == "A":
+            player_1 = AlphaBetaPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
+        elif mode[len(mode) - 2 :] == "MM":
+            player_1 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
+        elif mode[len(mode) - 2 :] == "TS":
+            player_1 = MonteCarloPlayer(game, ai_args["mcts_numit"])
+        else:
+            raise ValueError
 
         players = [player_0, player_1]
 
@@ -133,14 +124,26 @@ class Window:
 
             elif self.body_state == "choices":
                 if c == ord("1"):
-                    self.game, self.players = self.new_game()
+                    self.game, self.players = self.new_game(GAME_MODES[0], self.ai_args)
                     self.body_state = "game"
                 elif c == ord("2"):
-                    pass
+                    self.game, self.players = self.new_game(GAME_MODES[1], self.ai_args)
+                    self.body_state = "game"
                 elif c == ord("3"):
-                    pass
+                    self.game, self.players = self.new_game(GAME_MODES[2], self.ai_args)
+                    self.body_state = "game"
                 elif c == ord("4"):
-                    pass
+                    self.game, self.players = self.new_game(GAME_MODES[3], self.ai_args)
+                    self.body_state = "game"
+                elif c == ord("5"):
+                    self.game, self.players = self.new_game(GAME_MODES[4], self.ai_args)
+                    self.body_state = "game"
+                elif c == ord("6"):
+                    self.game, self.players = self.new_game(GAME_MODES[5], self.ai_args)
+                    self.body_state = "game"
+                elif c == ord("7"):
+                    self.game, self.players = self.new_game(GAME_MODES[6], self.ai_args)
+                    self.body_state = "game"
                 self.draw_body()
 
             elif self.body_state == "game":
@@ -167,8 +170,12 @@ class Window:
                         if not extra_move:
                             self.game.switch_player()
                         if self.game.is_end_match(self.game.board):
-                            break
+                            self.body_state = "gameover"
+                self.draw_body()
 
+            elif self.body_state == "gameover":
+                if c == ord("n"):
+                    self.body_state = "choices"
                 self.draw_body()
             curses.doupdate()
 
@@ -211,6 +218,41 @@ class Window:
             self.draw_help()
         elif self.body_state == "choices":
             self.draw_choices()
+        elif self.body_state == "gameover":
+            self.draw_gameover()
+
+    def draw_gameover(self):
+        self.body.clear()
+        winner = self.game.is_win(self.game.board)
+        if winner is not None:
+            if isinstance(self.players[winner], UIPlayer) and isinstance(
+                self.players[self.game.opposite_player(winner)], UIPlayer
+            ):
+                string = f"""
+                    Well Done Player {winner}! 
+                    You won with {self.game.board[self.game.player_pits[winner]]} points. 
+                    """
+            elif isinstance(self.players[winner], UIPlayer) and not isinstance(
+                self.players[self.game.opposite_player(winner)], UIPlayer
+            ):
+                string = f"""
+                    Well Done!
+                    You defeated the AI with {self.game.board[self.game.player_pits[winner]]} points. 
+                    """
+            else:
+                string = f"""
+                    Close but no cigar!
+                    You lost to AI with score {self.game.board[self.game.player_pits[winner]]} against  {self.game.board[self.game.player_pits[self.game.opposite_player(winner)]]}. 
+                    
+                    Try again. 
+                    """
+        else:
+            string = "It's a draw!"
+
+        for idx, line in enumerate(string.split("\n")):
+            self.body.addstr(idx, 0, line)
+
+        self.body.noutrefresh()
 
     def draw_help(self):
         self.body.clear()
@@ -236,11 +278,14 @@ class Window:
         self.body.clear()
 
         help_str = """
-            Game Mode:
+            Choose Game Mode:
                 - 1: Human vs. Human
                 - 2: Human vs. MiniMax AI
                 - 3: Human vs. AlfaBeta AI
                 - 4: Human vs. Monte Carlo Tree Search AI
+                - 5: MiniMax AI vs. Human 
+                - 6: AlfaBeta AI vs. Human
+                - 7: Monte Carlo Tree Search AI vs. Human 
         """
 
         for idx, line in enumerate(help_str.split("\n")):
@@ -363,15 +408,10 @@ class Window:
 if __name__ == "__main__":
     args = get_args()
 
-    player_0_args = {
-        "player_type": PLAYER_CHOICES[args.player0],
-        "heuristic": HEURISTIC_CHOICES[args.heuristic0],
-        "max_depth": args.max_depth_0,
-    }
-    player_1_args = {
-        "player_type": PLAYER_CHOICES[args.player1],
-        "heuristic": HEURISTIC_CHOICES[args.heuristic1],
-        "max_depth": args.max_depth_1,
+    ai_args = {
+        "heuristic": HEURISTIC_CHOICES[args.heuristic],
+        "max_depth": args.max_depth,
+        "mcts_numit": args.mcts_number_of_iterations,
     }
 
-    curses.wrapper(Window, player_0_args, player_1_args)
+    curses.wrapper(Window, ai_args)
