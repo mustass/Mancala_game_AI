@@ -83,3 +83,35 @@ An example is:
 ```bash
 python src/run_game.py -p0 minimax -p1 alphabeta -h0 h1 -h1 h1 -md0 2 -md1 2
 ```
+
+### How to run `run_experiments.py`:
+
+Largerly the same way as `run_game.py`, but with a few extra arguments.
+All available arguments are following: 
+
+
+```bash
+  -p0 PLAYER0, --player0 PLAYER0
+                        Type of AI to play player 0
+  -p1 PLAYER1, --player1 PLAYER1
+                        Type of AI to play player 1
+  -h0 HEURISTIC0, --heuristic0 HEURISTIC0
+                        Heuristic to use for AI player 0
+  -h1 HEURISTIC1, --heuristic1 HEURISTIC1
+                        Heuristic to use for AI player 1
+  -md0 MAX_DEPTH_0, --max_depth_0 MAX_DEPTH_0
+                        Max depth for AI player 0
+  -md1 MAX_DEPTH_1, --max_depth_1 MAX_DEPTH_1
+                        Max depth for AI player 1
+  -mcts_n0 MCTS_NUMBER_OF_IT_0, --mcts_number_of_it_0 MCTS_NUMBER_OF_IT_0
+                        Number of iterations for MCTS if AI player 0
+  -mcts_n1 MCTS_NUMBER_OF_IT_1, --mcts_number_of_it_1 MCTS_NUMBER_OF_IT_1
+                        Number of iterations for MCTS if AI player 0
+  -r REPEATS, --repeats REPEATS
+                        Number of repeats to run the experiment for.
+  -n NAME, --name NAME  Name the experiment
+```
+
+Compared to `run_game.py`, one must provide `-r` that is the number of games to run and `-n` which is a string with no spaces naming the experiment. 
+
+When an experiment is run, the script will create a folder:`./experiments/<concat name of the experiment>/` and inside there `results.txt` and `args.txt` will be placed.
