@@ -1,4 +1,3 @@
-
 import json
 from pathlib import Path
 from argparse import ArgumentParser
@@ -10,6 +9,7 @@ from naive_maximizer import NaiveMaximizerPlayer
 from heuristics import *
 from run_game import Match
 from tqdm import tqdm
+
 
 def get_args():
     parser = ArgumentParser(description="Evaluation argument parser")
@@ -133,18 +133,18 @@ def main():
         match = Match(game, player_0, player_1)
         result_sequence.append(match.run(verbose=False))
         match.run()
-    
+
     experiment_name = f"{args.player0}_vs_{args.player1}_{args.repeats}_{args.name}"
 
     destination_path = Path("./experiments") / experiment_name
 
     destination_path.mkdir(exist_ok=True)
 
-    with open(destination_path / 'results.txt', 'w') as f:
+    with open(destination_path / "results.txt", "w") as f:
         for item in result_sequence:
             f.write("%s\n" % item)
-    
-    with open(destination_path / 'args.txt', 'w') as f:
+
+    with open(destination_path / "args.txt", "w") as f:
         f.write(json.dumps(vars(args)))
 
 

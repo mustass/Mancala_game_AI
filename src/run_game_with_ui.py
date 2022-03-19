@@ -8,7 +8,17 @@ from mcts import MonteCarloPlayer
 from naive_maximizer import NaiveMaximizerPlayer
 from heuristics import *
 
-GAME_MODES = ["HvsH", "HvsMM", "HvsAB", "HvsMCTS", "MMvsH", "ABvsH", "MCTSvsH", "NvsH", "HvsN"]
+GAME_MODES = [
+    "HvsH",
+    "HvsMM",
+    "HvsAB",
+    "HvsMCTS",
+    "MMvsH",
+    "ABvsH",
+    "MCTSvsH",
+    "NvsH",
+    "HvsN",
+]
 
 PLAYER_CHOICES = {
     "human": UIPlayer,

@@ -102,19 +102,18 @@ class Match:
                     self.game.board[self.game.player_pits[1]],
                 )
                 print("\n", "=" * 88, "\n")
-            
+
             move = {0: self.player_0, 1: self.player_1}[self.game.player].think(
-                    self.game.board, self.game.player
-                )
+                self.game.board, self.game.player
+            )
 
             if verbose:
                 print(f"Player {self.game.player} chose move {move}")
                 print("\n", "=" * 88, "\n")
 
-
             next_board, extra_move = self.game.distr_pebbles(
-                    self.game.board, move, self.game.player
-                )
+                self.game.board, move, self.game.player
+            )
 
             self.game.update_game_board(next_board)
 
@@ -122,7 +121,7 @@ class Match:
                 self.game.switch_player()
 
             iteration += 1
-        
+
         if verbose:
             print(f"\nFinal board:")
             print(
@@ -139,8 +138,9 @@ class Match:
             )
             print("\n", "=" * 88, "\n")
             print(f"Player {self.game.is_win(self.game.board)} wins!")
-        
+
         return self.game.is_win(self.game.board)
+
 
 AI_CHOICES = {
     "minimax": MiniMaxPlayer,
