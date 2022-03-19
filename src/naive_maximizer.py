@@ -22,12 +22,12 @@ class NaiveMaximizerPlayer:
         
         if len(availableMoves)>0:
             
-            ## Find moves that will give you an extra move
-            
+            ## Find moves that will give you an extra move. This will be the move that lands in the player's pit.
             for move in availableMoves:
-                s = abs(7 - (move+player_board[move]+1)) 
-                if s == 7 or s == 0:
-                   next_moves.append(move)
+                landing = move + player_board[move]
+                # We check if it does. But we mind that one can still get there if the number of pebbles in the house is high
+                if landing == self.game.player_pits[player] or landing == self.game.player_pits[player] + 13 or landing == self.game.player_pits[player]+26:
+                    next_moves.append(move)
             
             ## If there are moves giving extra, choose the closest          
             
@@ -57,5 +57,11 @@ class NaiveMaximizerPlayer:
         
         return best_move
         
-        
-        
+if __name__ == "__main__":
+    board = [6,1,2,1,2,8,4,0,2,2,0,8,8,4]
+    game = Mancala(board)
+
+    player = NaiveMaximizerPlayer(game)
+
+    move = player.think(board, 0)
+    print(move)
