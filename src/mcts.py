@@ -22,7 +22,9 @@ class MCTSNode:
 
     def update(self, player_won):
         self.visits += 1
-        if player_won is not None and self.player == player_won:
+        if player_won is not None and self.parent is not None and self.parent.player == player_won:
+            self.wins += 1
+        elif self.parent is None and self.player == player_won:
             self.wins += 1
 
     @property
