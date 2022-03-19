@@ -20,9 +20,10 @@ class MCTSNode:
                 nc = MCTSNode(move, player, self)  # new child node
                 self.children.append(nc)
 
-    def update(self, r):
+    def update(self, player_won):
         self.visits += 1
-        self.wins += r
+        if player_won is not None and self.player == player_won:
+            self.wins += 1
 
     @property
     def is_leaf(self):
@@ -74,12 +75,12 @@ class MonteCarloPlayer:
 
             while not self.game.is_end_match(_board):  # simulate
                 _board, _player = self.simulation_policy_child(_board, _player)
-            result = self.score_outcome(_board, root_node)
+            player_won = self.game.is_win(_board)
             while n.has_parent:  # propagate
-                n.update(result)
+                n.update(player_won)
                 n = n.parent
             # Root node has to be updated as well
-            n.update(result)
+            n.update(player_won)
 
         return self.select_action(root_node)
 
