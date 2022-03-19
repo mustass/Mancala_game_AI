@@ -24,7 +24,7 @@ class Mancala:
 
         self.player = 0
 
-        print(f"Initialized the board{board}")
+        #print(f"Initialized the board{board}")
 
     def get_legal_moves(self, board, player: Literal[0, 1]) -> list:
         moves = {

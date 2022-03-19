@@ -33,7 +33,7 @@ def get_args():
         "-h0",
         "--heuristic0",
         type=str,
-        required=True,
+        required=False,
         help="Heuristic to use for AI player 0",
         default="h1",
     )
@@ -42,7 +42,7 @@ def get_args():
         "-h1",
         "--heuristic1",
         type=str,
-        required=True,
+        required=False,
         help="Heuristic to use for AI player 1",
         default="h1",
     )
@@ -80,8 +80,9 @@ class Match:
         self.player_0 = player_0
         self.player_1 = player_1
 
-    def run(self, verbose=True):
-        print("Mancala Game match:", "\n\n")
+    def run(self, verbose=False):
+        if verbose:
+            print("Mancala Game match:", "\n\n")
 
         iteration = 0
         while not self.game.is_end_match(self.game.board):
@@ -121,23 +122,25 @@ class Match:
                 self.game.switch_player()
 
             iteration += 1
-
-        print(f"\nFinal board:")
-        print(
-            "Player0 | houses: ",
-            [self.game.board[i] for i in self.game.player_houses[0]],
-            " | pit: ",
-            self.game.board[self.game.player_pits[0]],
-        )
-        print(
-            "Player1 | houses: ",
-            [self.game.board[i] for i in self.game.player_houses[1]],
-            " | pit: ",
-            self.game.board[self.game.player_pits[1]],
-        )
-        print("\n", "=" * 88, "\n")
-        print(f"Player {self.game.is_win(self.game.board)} wins!")
-
+        
+        if verbose:
+            print(f"\nFinal board:")
+            print(
+                "Player0 | houses: ",
+                [self.game.board[i] for i in self.game.player_houses[0]],
+                " | pit: ",
+                self.game.board[self.game.player_pits[0]],
+            )
+            print(
+                "Player1 | houses: ",
+                [self.game.board[i] for i in self.game.player_houses[1]],
+                " | pit: ",
+                self.game.board[self.game.player_pits[1]],
+            )
+            print("\n", "=" * 88, "\n")
+            print(f"Player {self.game.is_win(self.game.board)} wins!")
+        
+        return self.game.is_win(self.game.board)
 
 AI_CHOICES = {
     "minimax": MiniMaxPlayer,
@@ -173,7 +176,7 @@ def main():
 
     match = Match(game, player_0, player_1)
 
-    match.run()
+    match.run(verbose=True)
 
 
 if __name__ == "__main__":
