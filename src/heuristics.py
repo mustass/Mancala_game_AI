@@ -20,7 +20,7 @@ class GameScore(Heuristic):
             board
         ), "The game has to be ended if we are to calculate the game score."
 
-        score = board[self.game.player_pits[player]]
+        score = board[self.game.player_pits[0]]
 
         if score > 24:
             score = 999
@@ -60,11 +60,17 @@ class H3(Heuristic):
     def __init__(self, game: Mancala) -> None:
         super().__init__(game)
 
+    #def score(self, board, player):
+    #    store_player = board[self.game.player_pits[player]]
+    #    store_opposite_player = board[
+    #        self.game.player_pits[self.game.opposite_player(player)]
+    #    ]
+    #    return store_player - store_opposite_player
+    
     def score(self, board, player):
-        store_player = board[self.game.player_pits[player]]
-        store_opposite_player = board[
-            self.game.player_pits[self.game.opposite_player(player)]
-        ]
+        store_player = board[self.game.player_pits[0]]
+        store_opposite_player = board[self.game.player_pits[1]]
+        
         return store_player - store_opposite_player
 
 

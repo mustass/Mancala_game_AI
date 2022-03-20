@@ -16,7 +16,7 @@ class MiniMaxPlayer:
 
         return move
 
-    def minimax_algorithm(self, board, depth, player, extra_turn=False, verbose=False):
+    def minimax_algorithm(self, board, depth, player, extra_turn=False, verbose=True):
 
         board = deepcopy(board)
 
