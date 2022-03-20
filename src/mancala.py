@@ -91,6 +91,7 @@ class Mancala:
 
         board = self.capture_opposite_house(board, player, house)
         board = self.early_win(board, player)
+        board = self.early_gameover(board)
 
         extra_turn = ((player == 0) and (house == 6)) or (
             (player == 1) and (house == 13)
@@ -132,6 +133,19 @@ class Mancala:
                         board[index] = 0
 
         return board
+
+    def early_gameover(self, board)->list:
+        pit_indices = [int(v) for k, v in self.player_pits.items()]
+        outcome = [board[i] for i in pit_indices]
+        if any([outcome[0] >24, outcome[1] >24]):
+            player_won = outcome.index(max(outcome))
+            pebbles_left = 48 - outcome[0] - outcome[1]
+
+            board[self.player_pits[player_won]] += pebbles_left
+
+            for house in list(self.player_houses[0]+self.player_houses[1]):
+                board[house] = 0
+        return board            
 
     def update_game_board(self, board):
         self.board = board

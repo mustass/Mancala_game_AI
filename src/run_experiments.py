@@ -113,7 +113,7 @@ def main():
         game = Mancala()
 
         if AI_CHOICES[args.player0] is MonteCarloPlayer:
-            player_0 = AI_CHOICES[args.player0](game, args.mcts_number_of_it_0)
+            player_0 = AI_CHOICES[args.player0](game, args.mcts_number_of_it_0,0)
         elif AI_CHOICES[args.player0] is NaiveMaximizerPlayer:
             player_0 = AI_CHOICES[args.player0](game)
         else:
@@ -122,7 +122,7 @@ def main():
             )
 
         if AI_CHOICES[args.player1] is MonteCarloPlayer:
-            player_1 = AI_CHOICES[args.player1](game, args.mcts_number_of_it_1)
+            player_1 = AI_CHOICES[args.player1](game, args.mcts_number_of_it_1,1)
         elif AI_CHOICES[args.player1] is NaiveMaximizerPlayer:
             player_1 = AI_CHOICES[args.player1](game)
         else:
