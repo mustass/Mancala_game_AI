@@ -11,8 +11,8 @@ class AlphaBetaPlayer:
         self.GameScore = GameScore(self.game)
         self.Heuristic = heuristic(self.game)
 
-        self.alpha = -1000000
-        self.beta = 1000000
+        self.alpha = -99999
+        self.beta = 99999
 
     def think(self, board, player):
 
@@ -80,7 +80,7 @@ class AlphaBetaPlayer:
 
                 alpha = max(alpha, stored_value)
 
-                if alpha >= beta:
+                if beta <= alpha:
                     break
                 if verbose:
                     print(f"Stored value for MAX is: {stored_value}")
@@ -115,7 +115,7 @@ class AlphaBetaPlayer:
 
                 beta = min(beta, stored_value)
 
-                if beta <= self.alpha:
+                if beta <= alpha:
                     break
 
                 if verbose:
