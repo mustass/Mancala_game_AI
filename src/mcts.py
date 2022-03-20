@@ -4,20 +4,28 @@ from typing import Literal
 from mancala import Mancala
 from copy import deepcopy
 
-# random.seed(10)
+random.seed(10)
 class MCTSNode:
     def __init__(
-        self, move: int, player: Literal[0, 1], parent=None
+        self, move: int, player, parent=None
     ):  # move is from parent to node
         self.move, self.parent, self.player, self.children = move, parent, player, []
         self.wins, self.visits = 0, 0
 
     def expand_node(
-        self, is_terminal_node: bool, func_get_legal_moves, board: list, player: int,
+        self, game:Mancala, board: list,
     ):
-        if not is_terminal_node:
-            for move in func_get_legal_moves(board, player):
-                nc = MCTSNode(move, player, self)  # new child node
+        if not game.is_end_match(board):
+            #print(f"Global Player [{self.player}]")
+            #print(f"Available moves : {game.get_legal_moves(board, self.player)} and \n board {board}")
+            for move in game.get_legal_moves(board, self.player):
+                next_player = self.player    
+                _,extra_move = game.distr_pebbles(board, move, self.player)
+                #print(f"Move {move} leads to extra move: {extra_move} and \n board {_}")
+                if not extra_move:
+                    next_player = game.opposite_player(self.player)
+                #print(f"Player for corresponding child node {next_player}")
+                nc = MCTSNode(move, next_player, self)  # new child node
                 self.children.append(nc)
 
     def update(self, player_won):
@@ -26,6 +34,10 @@ class MCTSNode:
             self.wins += 1
         elif self.parent is None and self.player == player_won:
             self.wins += 1
+        elif player_won is None :
+            pass
+        #else:
+        #    self.wins -=1
 
     @property
     def is_leaf(self):
@@ -39,15 +51,19 @@ class MCTSNode:
     def UCB(self):
         if self.visits == 0:
             return 1e5
-        return self.wins / self.visits + math.sqrt(
+        
+        wins = self.wins if self.wins >= 0 else 0
+
+        return wins / self.visits + math.sqrt(
             2 * math.log(self.parent.visits) / self.visits
         )
 
 
 class MonteCarloPlayer:
-    def __init__(self, game: Mancala, num_iterations: int) -> None:
+    def __init__(self, game: Mancala, num_iterations: int, player: Literal[0,1]) -> None:
         self.game = game
         self.num_iterations = num_iterations
+        self.player = player
 
     def think(self, board, player):
 
@@ -56,21 +72,23 @@ class MonteCarloPlayer:
         return move
 
     def mcts_algorithm(self, board, player):
-        root_node = MCTSNode(None, player, None)
+        assert player == self.player
+
+        root_node = MCTSNode(None, self.player, None)
+        
         for _ in range(self.num_iterations):
             n, _board, _player = root_node, deepcopy(board), deepcopy(player)
             moves_seq = []
             while not n.is_leaf:  # select leaf
                 n = self.tree_policy_child(n)
-                moves_seq.append((n.move, n.player))
-
+                moves_seq.append((n.move, n.parent.player))
             if len(moves_seq) > 0:
                 _board, _player = self.play_game_sequence(_board, moves_seq)
+            if _player is not None:
+                assert n.player == _player
             n.expand_node(
-                self.game.is_end_match(_board),
-                self.game.get_legal_moves,
+                self.game,
                 _board,
-                _player,
             )  # expand
             if not self.game.is_end_match(_board):
                 n = self.tree_policy_child(n)
@@ -90,7 +108,7 @@ class MonteCarloPlayer:
         assert not node.is_leaf, "The node must be expanded"
 
         if all([child.visits == 0 for child in node.children]):
-            return node.children[0]
+            return random.choice(node.children)
         else:
             selected_node = None
             ucb = -1

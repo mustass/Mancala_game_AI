@@ -94,7 +94,7 @@ class Window:
         elif mode[0:1] == "MM":
             player_0 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
         elif mode[0:1] == "MC":
-            player_0 = MonteCarloPlayer(game, ai_args["mcts_numit"])
+            player_0 = MonteCarloPlayer(game, ai_args["mcts_numit"],0)
         elif mode[0] == "N":
             player_0 = NaiveMaximizerPlayer(game)
         else:
@@ -107,7 +107,7 @@ class Window:
         elif mode[len(mode) - 2 :] == "MM":
             player_1 = MiniMaxPlayer(game, ai_args["max_depth"], ai_args["heuristic"])
         elif mode[len(mode) - 2 :] == "TS":
-            player_1 = MonteCarloPlayer(game, ai_args["mcts_numit"])
+            player_1 = MonteCarloPlayer(game, ai_args["mcts_numit"],1)
         elif mode[-1] == "N":
             player_1 = NaiveMaximizerPlayer(game)
         else:
