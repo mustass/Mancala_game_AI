@@ -38,7 +38,7 @@ def get_args():
         "--heuristic",
         type=str,
         help="Heuristic to use for AI player when applicable.",
-        default="h1",
+        default="h3",
     )
 
     parser.add_argument(
@@ -46,7 +46,7 @@ def get_args():
         "--max_depth",
         type=int,
         help="Max depth for AI player when applicable.",
-        default=2,
+        default=6,
     )
 
     parser.add_argument(
@@ -54,7 +54,7 @@ def get_args():
         "--mcts_number_of_iterations",
         type=int,
         help="Number of iterations for AI with MCTS.",
-        default=10,
+        default=100,
     )
 
     return parser.parse_args()
