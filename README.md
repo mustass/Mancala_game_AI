@@ -46,7 +46,7 @@ One is allowed to select the AI one wants to play against inside the game. Howev
 An example run can be: 
 
 ```bash
-python src/run_game_with_ui.py --heuristic h1 -md 2 -numit 10
+python src/run_game_with_ui.py --heuristic h3 -md 6 -numit 100
 ```
 This will use H1 heuristic for the MiniMax or Alphabeta algorithms and will run them with max depth of 2. If one will choose the Monte Carlo Tree Search inside the UI, the algorithm will run with 10 iterations. 
 
