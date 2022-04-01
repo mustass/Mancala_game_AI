@@ -1,5 +1,5 @@
 # mancalaAI
-DTU prject repo for Intro to AI course assignment 1. 
+DTU project repo for Intro to AI course assignment 1. 
 
 This project develops a game-playing AI using the material of the course. 
 
