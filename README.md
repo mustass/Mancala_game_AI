@@ -1,7 +1,8 @@
 # mancalaAI
-DTU project repo for Intro to AI course assignment 1. 
 
-This project develops a game-playing AI using the material of the course. 
+This repo covers the code to implement the "Kalah" version of the more general game Mancala, few algorithms to play against and an UI for the game. 
+Developed as a DTU project for Intro to AI course assignment 1.
+
 
 ## About
 
